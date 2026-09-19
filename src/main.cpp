@@ -22,6 +22,7 @@
 #include "pet.h"
 #include "swing.h"
 #include "dino.h"
+#include "seed.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); };
@@ -47,6 +48,7 @@ static const Game games[] = {
   { 0.00f, pet::init,     pet::step,     pet::draw     },
   { 0.10f, swing::init,   swing::step,   swing::draw   },
   { 0.66f, dino::init,    dino::step,    dino::draw    },
+  { 0.75f, seed::init,    seed::step,    seed::draw    },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0;   // cur<0 = 在選單

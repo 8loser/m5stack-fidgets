@@ -27,6 +27,7 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 | 19 | 火柴人電子雞 | 飽食 / 心情 / 精神隨真實時間下降,餵食、丟球(傾斜滾球讓牠追)、睡覺、清便便;表情隨狀態變;狀態存 NVS、用 RTC 算離線時間 |
 | 20 | 火柴人盪繩 | 吊著繩子在錨點間盪,點螢幕放手、手靠近錨點自動抓;掉地上重來 |
 | 21 | 小恐龍 | Chrome 斷線小恐龍:點螢幕跳、按住下半部蹲,越跑越快,每 300 分日夜切換 |
+| 22 | 壓板與 Seed | 壓板每隔幾秒壓下,壓到的球 xN 增殖把箱子塞滿;你是 Seed,傾斜移動、點螢幕跳,別被壓到 |
 
 6 到 18 取自另一支參考影片的段落。所有遊戲都吃傾斜(重力或方向偏向)與觸控(踢球、生東西或推開),各遊戲檔開頭的註解寫了具體互動。
 
@@ -54,5 +55,5 @@ PlatformIO + Arduino framework,依賴 M5Unified(`platformio.ini`)。
 - `src/main.cpp`:選單與主迴圈;新遊戲寫一個 `.h` 提供 `init / step / draw`,在 `games[]` 加一行
 - `src/common.h`:畫布、Ctx、顏色、震動、音效合成、圓形場地反彈 / 點擊踢球 / 定速等共用函式
 - `src/ringlib.h`:環系列共用(弧線、球與扇區碰撞、火花、脫落環片)
-- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 13)`tri.h` `merge.h` `grow.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h`:各遊戲
+- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 13)`tri.h` `merge.h` `grow.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h`:各遊戲
 - `src/face.h`:火柴人的臉與表情(電子雞、盪繩共用);`src/ragdoll.h`:Verlet 布娃娃骨架(盪繩用)

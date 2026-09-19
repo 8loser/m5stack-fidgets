@@ -38,12 +38,17 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 | 30 | 罰球 | 傾斜瞄準、點螢幕射門,守門員 Kevin 每失一球就變大;10 球比進球數,前 5 名排行 |
 | 31 | 每彈一次挖一塊 | Minecraft 式地層,球每撞到一塊就敲掉、小彈一下繼續鑽;有洞穴與礦,底部岩漿;傾斜輕推、點螢幕往下砸;碰到岩漿結束比深度,前 5 名排行 |
 | 32 | 物理方塊堆 | 俄羅斯方塊的形狀但是真剛體,會翻會歪;傾斜推、點螢幕轉;一列填滿就消;堆到頂結束,比列數,前 5 名排行 |
+| 33 | 看塔猜數 | Numberblocks 的塔(10 以上分成 10 的柱 + 零頭),三個選項猜是幾;A 左 C 右點中間;3 條命,前 5 名排行 |
+| 34 | 湊出這個數 | A 加一根 10、C 加 1、點塔減 1,疊到跟目標一樣就送出;60 秒湊對幾題,前 5 名排行 |
+| 35 | 比大小與加法 | 兩座塔,「哪邊大」往大的那邊傾斜作答,「加起來多少」三選一;3 條命,前 5 名排行 |
+| 36 | 算數跑酷 | 角色在跑道上往前跑,前方的門左右兩格是兩個答案,傾斜 / A / C / 點左右半邊移到對的那邊;加減乘除越來越難,走錯結束,分數是通過幾道門,前 5 名排行 |
+| 37 | 地城勇者 | 磚牆地城,勇者彈珠撞球式定速反射、撞到磚就敲掉;傾斜轉向、A/C 像方向盤左右轉、靠近 Boss 自動揮劍;小怪清光後 Boss 隨機現身、也定速反射彈來彈去、定時揮爪;地上有愛心 / 劍 / 盾 / 陷阱;砍倒 Boss 進下一層,比層數,前 5 名排行 |
 
 26 到 29 是彈珠系列(取自第四支影片):6 色彈珠輪流倒進場地,掉出底部就依顏色堆進右邊的管子累積,哪根先滿就全部清空重來,沒有輸贏。全部都是傾斜給左右重力、點螢幕推開彈珠。
 
-有輸贏的遊戲(小恐龍、壓板與 Seed、電子雞的壽命、罰球、挖地、方塊堆)結束時顯示前 5 名排行,存 NVS。
+有輸贏的遊戲(小恐龍、壓板與 Seed、電子雞的壽命、罰球、挖地、方塊堆、Numberblocks 三個、算數跑酷、地城勇者)結束時顯示前 5 名排行,存 NVS。
 
-30 到 32 取自第五支影片的 2:37、3:17、4:09 三段。
+30 到 32 取自第五支影片的 2:37、3:17、4:09 三段。33 到 35 取自 Numberblocks「Standing Tall 1 to 100」,練數量感與十進位。
 
 6 到 18 取自另一支參考影片的段落。所有遊戲都吃傾斜(重力或方向偏向)與觸控(踢球、生東西或推開),各遊戲檔開頭的註解寫了具體互動。
 
@@ -51,7 +56,7 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 
 螢幕下方三個觸控鍵:
 
-- 選單:A / C 或左右滑換遊戲,B 或點預覽進入;10 秒沒操作自動輪播;卡片下方顯示該遊戲進入過幾次(存 NVS)
+- 選單:A / C 或左右滑換遊戲,B 或點預覽進入(進入時遊戲重置);10 秒沒操作自動輪播;卡片下方顯示該遊戲進入過幾次(存 NVS)
 - 遊戲內:A / C 是遊戲操作:有東西在轉的遊戲(色層擴張、井字、向心 / 逃脫加速、碎石、五角形、同色合併、每彈一次生一顆、轉環引路、蹺蹺板、雙輪、尖刺碗)用來轉它;小恐龍 A 跳 C 蹲;其他是往左 / 往右的虛擬傾斜。B 長按回選單、雙擊重置(短按不做事;B 只認鍵區正中 70 px,靠邊的算按 A / C 擦到)
 
 ## 建置
@@ -73,6 +78,7 @@ PlatformIO + Arduino framework,依賴 M5Unified(`platformio.ini`)。
 - `src/main.cpp`:選單與主迴圈;新遊戲寫一個 `.h` 提供 `init / step / draw`,在 `games[]` 加一行
 - `src/common.h`:畫布、Ctx、顏色、震動、音效合成、圓形場地反彈 / 點擊踢球 / 定速等共用函式
 - `src/ringlib.h`:環系列共用(弧線、球與扇區碰撞、火花、脫落環片)
-- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 13)`tri.h` `merge.h` `grow.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h`:各遊戲
+- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 13)`tri.h` `merge.h` `grow.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h` `nbguess.h` `nbbuild.h` `nbcompare.h` `mathrun.h` `dungeon.h`:各遊戲
+- `src/numberlib.h`:Numberblocks 系列共用(畫數字塔、選項按鈕、出題)
 - `src/marblelib.h`:彈珠系列共用(彈珠池、線段 / 圓 / 弧碰撞、子步物理、右側色管)
 - `src/face.h`:火柴人的臉與表情(電子雞、盪繩共用);`src/ragdoll.h`:Verlet 布娃娃骨架(盪繩用)

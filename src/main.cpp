@@ -34,6 +34,11 @@
 #include "penalty.h"
 #include "dig.h"
 #include "stack.h"
+#include "nbguess.h"
+#include "nbbuild.h"
+#include "nbcompare.h"
+#include "mathrun.h"
+#include "dungeon.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
@@ -70,11 +75,16 @@ static const Game games[] = {
   { 0.33f, penalty::init, penalty::step, penalty::draw },
   { 0.10f, dig::init,     dig::step,     dig::draw     },
   { 0.60f, stack::init,   stack::step,   stack::draw   },
+  { 0.02f, nbguess::init, nbguess::step, nbguess::draw, true },
+  { 0.12f, nbbuild::init, nbbuild::step, nbbuild::draw, true },
+  { 0.22f, nbcompare::init, nbcompare::step, nbcompare::draw, true },
+  { 0.58f, mathrun::init, mathrun::step, mathrun::draw, true },
+  { 0.30f, dungeon::init, dungeon::step, dungeon::draw, true },
 };
 constexpr int NG = sizeof games / sizeof games[0];
-static int cur = -1, sel = 0;   // cur<0 = 在選單
+static int cur = -1, sel = 0, started = -1;   // cur<0 = 在選單;started = 已經 init 過的遊戲(進遊戲第一幀保險重置用)
 static uint16_t plays[NG]; static Preferences playPrefs;   // 各遊戲進入次數,存 NVS;games[] 順序改了計數就會對不上
-static void enterGame() { cur = sel; plays[sel]++; playPrefs.putBytes("n", plays, sizeof plays); }
+static void enterGame() { cur = sel; plays[sel]++; playPrefs.putBytes("n", plays, sizeof plays); games[sel].init(); }   // 進遊戲一律重置,不接著預覽玩
 
 // 選單用第二層畫布;被選中的遊戲照常畫在 cv,再縮小貼進卡片
 static M5Canvas menu(&M5.Display);
@@ -142,14 +152,15 @@ void loop() {
     if (M5.BtnB.wasClicked() && bCenter) enterGame();
     if (t.wasReleased() || M5.BtnA.wasClicked() || M5.BtnC.wasClicked()) idleT = 0;
     muted = true;
-    drawMenu(c);   // 進遊戲時不重新 init:預覽畫面直接接著玩
+    drawMenu(c);
   } else {
     // 遊戲內:A/C 交給遊戲(沒特別用的遊戲就是虛擬傾斜);B 長按回選單、雙擊重置。短按不做事,按 A/C 時擦到 B 才不會跳出
-    if (M5.BtnB.wasHold() && bCenter) { cur = -1; idleT = 0; return; }
+    if (M5.BtnB.wasHold() && bCenter) { cur = -1; started = -1; idleT = 0; return; }
     if (M5.BtnB.wasDoubleClicked() && bCenter) games[cur].init();
     c.btnA = M5.BtnA.isPressed(); c.btnC = M5.BtnC.isPressed(); c.tapA = M5.BtnA.wasPressed(); c.tapC = M5.BtnC.wasPressed();
     if (!games[cur].acOwn) c.gx += (c.btnC - c.btnA) * 0.7f;
     muted = false;
+    if (started != cur) { started = cur; games[cur].init(); }   // 進遊戲的第一幀再保險重置一次(不管從哪條路進來)
     games[cur].step(c); games[cur].draw();
     cv.setTextDatum(top_right); cv.setTextSize(1); cv.setTextColor(rgb(120, 120, 120), 0);
     char buf[12]; snprintf(buf, sizeof buf, "%d / %d", cur + 1, NG); cv.drawString(buf, W - 2, 2);

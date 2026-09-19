@@ -35,18 +35,18 @@ static uint32_t hsv(float h) {  // h 0..1, 全飽和
 static void buzz(uint8_t level, uint32_t ms) { if (muted) return; M5.Power.setVibration(level); vibUntil = millis() + ms; }
 
 // 音效。note():鋼琴感的音(6 個諧波、快起音、約 1 秒衰減,高次諧波衰得快),音高吸到 C 大調五聲音階
-//       click():撞擊的短促「嗒」聲(3.4 kHz + 1 kHz 阻尼正弦,30 ms),參考影片井字段的頻譜
+//       click():撞擊的低沉「咚」聲(500 Hz 主體 + 150 Hz 底 + 750 Hz 泛音,約 35 ms 衰 20 dB)。
+//               量自參考影片井字段(43 到 48 秒)的牆壁撞擊:99% 能量在 300 到 900 Hz,2 kHz 以上幾乎沒有
 namespace snd {
-  constexpr int SR = 12000, LEN = SR, CSR = 24000, CLEN = CSR * 3 / 100, NBUF = 6;   // click 用較高取樣率才夠脆
-  static int16_t* buf[NBUF]; static int16_t* cbuf; static int16_t lut[256];
+  constexpr int SR = 12000, LEN = SR, CSR = 12000, CLEN = CSR * 8 / 100, NBUF = 6;   // click 80 ms
+  static int16_t* buf[NBUF]; static int16_t cbuf[CLEN]; static int16_t lut[256];   // cbuf 才 2 KB,放內部 RAM 不依賴 PSRAM
   static const float PENTA[5] = { 261.63f, 293.66f, 329.63f, 392.00f, 440.00f };
   void init() {
     for (int i = 0; i < 256; i++) lut[i] = (int16_t)(sinf(i * 6.2831853f / 256) * 32767);
     for (auto& b : buf) b = (int16_t*)heap_caps_malloc(LEN * sizeof(int16_t), MALLOC_CAP_SPIRAM);
-    cbuf = (int16_t*)heap_caps_malloc(CLEN * sizeof(int16_t), MALLOC_CAP_SPIRAM);
-    if (cbuf) for (int i = 0; i < CLEN; i++) {   // 兩個阻尼正弦(3.4 kHz 主體 + 1 kHz 木質底),像敲擊的「嗒」
-      float t = i / (float)CSR;
-      cbuf[i] = (int16_t)(12000 * (0.7f * sinf(6.2831853f * 3400 * t) * expf(-150 * t) + 0.3f * sinf(6.2831853f * 1000 * t) * expf(-80 * t)));
+    for (int i = 0; i < CLEN; i++) {   // 三個阻尼正弦;Core2 喇叭低頻弱,振幅 25000 已接近上限(三項合計 1.26 倍),還嫌小聲就提高 500 Hz 或 main.cpp 的 setVolume
+      float t = i / (float)CSR, w = 6.2831853f;
+      cbuf[i] = (int16_t)(25000 * (sinf(w * 500 * t) * expf(-65 * t) + 0.18f * sinf(w * 150 * t) * expf(-50 * t) + 0.08f * sinf(w * 750 * t) * expf(-90 * t)));
     }
   }
   static float snap(float f) {
@@ -62,7 +62,7 @@ namespace snd {
     if (!buf[k]) { M5.Speaker.tone(f, 30); return; }
     M5.Speaker.stop(k);
     f = snap(f);
-    static const int AMP[6] = { 9000, 5000, 3200, 2200, 1500, 1000 };
+    static const int AMP[6] = { 3400, 1900, 1200, 830, 560, 375 };   // 原 9000..1000 乘 48/128,讓 note 在 setVolume(128) 時等於原音量
     static const float DECAY[6] = { 3.0f, 3.6f, 4.4f, 5.4f, 6.6f, 8.0f };
     uint32_t ph = 0, dph = (uint32_t)(f / SR * 4294967296.0f);
     for (int i = 0; i < LEN; i += 32) {
@@ -74,7 +74,7 @@ namespace snd {
     }
     M5.Speaker.playRaw(buf[k], LEN, SR, false, 1, k, true);
   }
-  void click() { if (muted) return; if (cbuf) M5.Speaker.playRaw(cbuf, CLEN, CSR, false, 1, 7, true); else M5.Speaker.tone(3400, 8); }
+  void click() { if (!muted) M5.Speaker.playRaw(cbuf, CLEN, CSR, false, 1, 7, true); }
 }
 
 // 每幀把 8-bit(RGB332)畫布整體調暗一級,產生殘影

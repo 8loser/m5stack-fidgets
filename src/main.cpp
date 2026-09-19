@@ -45,7 +45,7 @@ static void drawMenu(const Ctx& c) {
 
 void setup() {
   auto cfg = M5.config(); M5.begin(cfg);
-  M5.Speaker.setVolume(48); snd::init();
+  M5.Speaker.setVolume(96); snd::init();   // click 的 500 Hz 在小喇叭上出力弱,主音量開大(整體太吵就調這裡)、note 的 AMP 已等比例壓低
   cv.setColorDepth(8); cv.createSprite(W, H);
   menu.setColorDepth(8);
   if (!menu.createSprite(W, H)) { menu.setPsram(true); menu.createSprite(W, H); }

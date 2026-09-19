@@ -31,14 +31,14 @@ namespace ttt {
     b.vx += gx * G * c.dt; b.vy += gy * G * c.dt;
     float v = sqrtf(b.vx * b.vx + b.vy * b.vy); if (v < 120 && v > 1e-3f) { b.vx *= 120 / v; b.vy *= 120 / v; }
     b.x += b.vx * c.dt; b.y += b.vy * c.dt;
-    bool hit = false; float lim = HALF - BALL_R;
-    if (b.x < -lim) { b.x = -lim; b.vx = fabsf(b.vx); hit = true; } if (b.x > lim) { b.x = lim; b.vx = -fabsf(b.vx); hit = true; }
-    if (b.y < -lim) { b.y = -lim; b.vy = fabsf(b.vy); hit = true; } if (b.y > lim) { b.y = lim; b.vy = -fabsf(b.vy); hit = true; }
+    float hit = 0, lim = HALF - BALL_R;   // 撞擊的法向速度;球被重力壓在牆上時每幀只有幾個單位,不算撞
+    if (b.x < -lim) { b.x = -lim; hit = -b.vx; b.vx = fabsf(b.vx); } if (b.x > lim) { b.x = lim; hit = b.vx; b.vx = -fabsf(b.vx); }
+    if (b.y < -lim) { b.y = -lim; hit = -b.vy; b.vy = fabsf(b.vy); } if (b.y > lim) { b.y = lim; hit = b.vy; b.vy = -fabsf(b.vy); }
     for (int i = 0; i < 9; i++) if (cell[i]) {   // 記號當圓形障礙
       float dx = b.x - cellX(i), dy = b.y - cellY(i), d = sqrtf(dx * dx + dy * dy) + 1e-3f, R = MARK_R + BALL_R;
-      if (d < R) { float nx = dx / d, ny = dy / d, vn = b.vx * nx + b.vy * ny; b.x = cellX(i) + nx * R; b.y = cellY(i) + ny * R; if (vn < 0) { b.vx -= 2 * vn * nx; b.vy -= 2 * vn * ny; } hit = true; }
+      if (d < R) { float nx = dx / d, ny = dy / d, vn = b.vx * nx + b.vy * ny; b.x = cellX(i) + nx * R; b.y = cellY(i) + ny * R; if (vn < 0) { b.vx -= 2 * vn * nx; b.vy -= 2 * vn * ny; hit = -vn; } }
     }
-    if (hit) { spark(sx, sy, markCol(turn)); snd::click(); }
+    if (hit > 60) { spark(sx, sy, markCol(turn)); snd::click(); }
     int8_t w = winner(); bool full = true; for (auto m : cell) full &= m != 0;
     if (!w && !full && (turnT += c.dt) >= TURN_T) {   // 回合到:蓋在離球最近的空格
       turnT = 0; int best = -1; float bd = 1e9f;

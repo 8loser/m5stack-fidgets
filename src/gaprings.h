@@ -4,7 +4,7 @@
 // ================= 6. 向心加速 / 13. 逃脫加速 =================
 // 同心環各開一道缺口、各自以不同方向與速度旋轉;球穿過缺口就進到下一層並加速。
 // 向心:從最外層往中心鑽,碰到中心炸開重來。逃脫:從中心往外逃,逃出全部就下一回合、起始速度更快。
-// 傾斜改變球的方向(速度長度固定),點螢幕把球朝手指踢
+// 傾斜改變球的方向(速度長度固定),點螢幕把球朝手指踢,A/C 轉整組環
 namespace gaprings {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
   constexpr int CX = 160, CY = 120, NR = 7, RMIN = 22, RSTEP = 13, BALL_R = 4, NROUND = 8; constexpr float GAP = 44, G = 250, KICK = 200, V0 = 110;
@@ -23,7 +23,7 @@ namespace gaprings {
   void initIn() { round_ = 0; start(true); }
   void initOut() { round_ = 0; start(false); }
   void step(const Ctx& c) {
-    for (int i = 0; i < NR; i++) ang[i] += spd[i] * c.dt;
+    for (int i = 0; i < NR; i++) ang[i] += (spd[i] + (c.btnC - c.btnA) * 70) * c.dt;   // A/C 整組環一起轉
     if (over) { if ((endT += c.dt) > 2) { round_ = 0; start(inward); } stepSparks(c.dt); return; }
     if (c.tap) tapKick(c, b.x, b.y, b.vx, b.vy, KICK);
     b.vx += c.gx * G * c.dt; b.vy += c.gy * G * c.dt; setSpeed(b.vx, b.vy, speed);

@@ -3,7 +3,7 @@
 
 // ================= 16. 收縮的五角形 =================
 // 旋轉的五角形牆一直往內縮,兩顆球在裡面彈跳、拖著長尾巴;縮到太小就炸開重來。
-// 傾斜給重力,點螢幕把兩顆球都朝手指踢
+// 傾斜給重力,點螢幕把兩顆球都朝手指踢,A/C 轉五角形
 namespace penta {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
   constexpr int NB = 2, BALL_R = 5; constexpr float CX = 160, CY = 120, RMAX0 = 100, RMIN = 22, SHRINK = 3.0f, OMEGA = 0.7f, G = 260, KICK = 240, VMIN = 140;
@@ -16,7 +16,7 @@ namespace penta {
   }
   void step(const Ctx& c) {
     if (over) { if ((endT += c.dt) > 2.5f) init(); stepSparks(c.dt); return; }
-    th += OMEGA * c.dt; R -= SHRINK * c.dt;
+    th += (OMEGA + (c.btnC - c.btnA) * 2.5f) * c.dt; R -= SHRINK * c.dt;   // A/C 轉五角形
     for (auto& o : b) {
       if (c.tap) tapKick(c, o.x, o.y, o.vx, o.vy, KICK);
       o.vx += c.gx * G * c.dt; o.vy += c.gy * G * c.dt;

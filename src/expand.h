@@ -8,7 +8,7 @@ namespace expand {
   static float wallOf(int) { return over ? -1 : R0; }
   void init() { memset(cnt, 0, sizeof cnt); over = false; endT = 0; reset(); spawnBall(); cv.fillScreen(0); }
   void step(const Ctx& c) {
-    if (!over) rot += 25 * c.dt;   // 環持續旋轉
+    if (!over) rot += (25 + (c.btnC - c.btnA) * 120) * c.dt;   // 環持續旋轉,A/C 轉它
     int s = ballStep(c, wallOf);
     if (s >= 0 && cnt[s] < LAYERS - 1 && ++cnt[s] == LAYERS - 1) {   // 贏了:全部脫落
       over = true; buzz(200, 120);

@@ -1,6 +1,7 @@
 // 所有遊戲共用:校正旋鈕、畫布、Ctx、亂數/顏色、震動、音效、殘影
 #pragma once
 #include <M5Unified.h>
+#include <Preferences.h>
 #include <cmath>
 #include <cstring>
 
@@ -20,6 +21,9 @@ struct Ctx {
   bool  touch;    // 有手指在螢幕區
   int   tx, ty;
   bool  tap;      // 這一幀剛按下
+  bool  btnA, btnC;   // 遊戲內 A / C 鍵按住(主迴圈同時把它們當成往左 / 往右的虛擬傾斜加進 gx)
+  bool  tapA, tapC;   // 這一幀剛按下
+  float shake;    // 搖晃強度:加速度大小偏離 1 g 的量(g),靜止或純傾斜約 0,甩一下 1 以上
   float dt;
 };
 
@@ -91,6 +95,25 @@ namespace snd {
   }
   void click() { if (!muted) M5.Speaker.playRaw(cbuf, CLEN, CSR, false, 1, 7, true); }
 }
+
+// 前 5 名排行:存 NVS(namespace "lb",key 用遊戲名),越大越好
+static Preferences& lbPrefs() { static Preferences p; static bool open = false; if (!open) { open = true; p.begin("lb", false); } return p; }
+struct Board {
+  const char* key; uint16_t top[5]; bool loaded;
+  void load() { if (!loaded) { loaded = true; lbPrefs().getBytes(key, top, sizeof top); } }
+  int record(int v) {   // 插進榜,回傳名次(0 起算),沒進榜回 -1
+    load(); int i = 5; while (i > 0 && top[i - 1] < v) i--; if (i >= 5) return -1;
+    for (int k = 4; k > i; k--) top[k] = top[k - 1]; top[i] = (uint16_t)v; lbPrefs().putBytes(key, top, sizeof top); return i;
+  }
+  uint16_t best() { load(); return top[0]; }
+  void draw(const char* title, int rank, const char* hint = "tap to retry") {   // 結算面板:標題 + 前 5 名,本回合那列標黃
+    cv.fillRect(88, 42, 144, 140, 0); cv.drawRoundRect(88, 42, 144, 140, 6, rgb(120, 120, 140));
+    cv.setTextDatum(top_center); cv.setTextSize(2); cv.setTextColor(rgb(255, 230, 0), 0); cv.drawString(title, W / 2, 48);
+    cv.setTextSize(1); char s[24];
+    for (int i = 0; i < 5; i++) { bool me = i == rank; cv.setTextColor(me ? rgb(255, 230, 0) : rgb(200, 200, 200), 0); snprintf(s, sizeof s, "%d.  %5u%s", i + 1, top[i], me ? " <" : ""); cv.drawString(s, W / 2, 72 + i * 14); }
+    cv.setTextColor(rgb(120, 120, 140), 0); cv.drawString(hint, W / 2, 162);
+  }
+};
 
 // 每幀把 8-bit(RGB332)畫布整體調暗一級,產生殘影
 static uint8_t fadeLut[256];

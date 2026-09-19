@@ -3,7 +3,7 @@
 
 // ================= 4. 井字 =================
 // 球在慢速旋轉的 3x3 箱裡彈,牆和已蓋的 O / X 都會反彈(撞擊噴火花 + 喀聲)。
-// 每回合 2 秒到,就在離球最近的空格蓋上球的顏色(X 紅 / O 青),然後換色
+// 每回合 2 秒到,就在離球最近的空格蓋上球的顏色(X 紅 / O 青),然後換色。A/C 加速轉箱子
 namespace ttt {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
   constexpr int CXT = 160, CYT = 120; constexpr float S = 150, HALF = S / 2, CELL = S / 3, G = 250, KICK = 220, OM = 0.35f, TURN_T = 2.0f, MARK_R = 15, BALL_R = 5;
@@ -24,7 +24,7 @@ namespace ttt {
     float a = frand() * 6.283f; b = { 0, 0, cosf(a) * 170, sinf(a) * 170 }; ringlib::reset(); cv.fillScreen(0);
   }
   void step(const Ctx& c) {
-    th += OM * c.dt;
+    th += (OM + (c.btnC - c.btnA) * 1.5f) * c.dt;   // A/C 轉箱子
     float gx, gy; toLocal(c.gx, c.gy, gx, gy);
     int sx, sy; toScreen(b.x, b.y, sx, sy); int ti = trailN++ % 8; trail[ti][0] = sx; trail[ti][1] = sy;
     if (c.tap) { float lx, ly; toLocal(c.tx - CXT, c.ty - CYT, lx, ly); float dx = lx - b.x, dy = ly - b.y, d = sqrtf(dx * dx + dy * dy) + 1e-3f; b.vx = dx / d * KICK; b.vy = dy / d * KICK; }

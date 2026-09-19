@@ -10,7 +10,7 @@ namespace seed {
   constexpr int MAXB = 160, BALL_R = 4, SR = 6, X0 = 0, X1 = W, FLOOR = H, TOP = 28, PLATE_H = 10; constexpr float G = 700, REST = 0.3f, PW0 = 110, PWMAX = 270;
   struct B { float x, y, vx, vy; uint32_t col; bool live; } static b[MAXB];
   static struct { float x, y, vx, vy; bool ground; int squeeze; } s;
-  static float py, pw, phaseT, endT; static int phase, nball, crushes, mult, best; static bool dead; static face::Mood mood;   // phase 0 等待 1 下壓 2 壓底 3 上升
+  static float py, pw, phaseT, endT; static int phase, nball, crushes, mult, rank; static bool dead; static Board board = { "seed" }; static face::Mood mood;   // phase 0 等待 1 下壓 2 壓底 3 上升
   static void spawn(float x, float y, float vx, float vy, uint32_t col) { for (auto& o : b) if (!o.live) { o = { x, y, vx, vy, col, true }; nball++; return; } }
   void init() {
     memset(b, 0, sizeof b); nball = crushes = 0; mult = 2; dead = false; endT = 0; py = TOP; pw = PW0; phase = 0; phaseT = 0; mood = face::CALM;
@@ -39,7 +39,7 @@ namespace seed {
     if (under) { crushes++; spark(160, FLOOR - 6, rgb(255, 230, 0)); snd::note(180 + crushes * 20); buzz(120, 60); }
     if (nball >= MAXB - mult * 2 && pw < PWMAX) pw += 25;   // 球滿了:壓板變寬
     if (crushes % 4 == 0 && under && mult < 6) mult++;
-    if (s.x > plateL() - SR && s.x < plateR() + SR) { dead = true; endT = 0; mood = face::DEAD; if (nball > best) best = nball; spark(s.x, s.y, rgb(255, 80, 80)); snd::note(120); buzz(255, 400); }
+    if (s.x > plateL() - SR && s.x < plateR() + SR) { dead = true; endT = 0; mood = face::DEAD; rank = board.record(nball); spark(s.x, s.y, rgb(255, 80, 80)); snd::note(120); buzz(255, 400); }
   }
   void step(const Ctx& c) {
     if (dead) { if ((endT += c.dt) > 1 && c.tap) init(); return; }
@@ -79,8 +79,8 @@ namespace seed {
     for (auto& o : b) if (o.live) cv.fillCircle((int)o.x, (int)o.y, BALL_R, o.col);
     cv.fillCircle((int)s.x, (int)s.y, SR, rgb(220, 120, 30)); face::draw(s.x, s.y, 1, 0, 0, 1, mood, 0.8f);
     drawSparks();
-    char t[40]; snprintf(t, sizeof t, "x%d  balls %d  best %d", mult, nball, best);
+    char t[40]; snprintf(t, sizeof t, "x%d  balls %d  best %u", mult, nball, board.best());
     cv.setTextDatum(top_left); cv.setTextSize(1); cv.setTextColor(rgb(160, 160, 160), 0); cv.drawString(t, 4, 4);
-    if (dead) { cv.setTextDatum(middle_center); cv.setTextSize(2); cv.setTextColor(rgb(255, 80, 80), 0); snprintf(t, sizeof t, "CRUSHED AT %d", nball); cv.drawString(t, 160, 110); cv.setTextSize(1); cv.setTextColor(rgb(200, 200, 200), 0); cv.drawString("tap to retry", 160, 130); }
+    if (dead) { snprintf(t, sizeof t, "CRUSHED %d", nball); board.draw(t, rank); }
   }
 }

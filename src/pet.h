@@ -8,15 +8,16 @@
 // 養一隻火柴人:飽食 / 心情 / 精神三條值隨真實時間下降,狀態存 NVS、用 RTC 算離線時間,關機也繼續活。
 // 蛋 1 分鐘孵化,1 小時後長大。下排四個鍵:餵食(掉一顆蘋果,牠走過去吃)、玩(丟球,傾斜滾球讓牠追)、
 // 睡 / 叫醒(睡覺回精神)、清理(便便放著心情會掉)。點牠會跳一下,睡覺時點牠會不爽。
-// 傾斜太斜牠會滑倒站不穩、久了頭暈。任一值歸零太久會生病,病一小時就死,死了點一下重新孵蛋
+// 傾斜太斜牠會滑倒站不穩、久了頭暈;搖裝置搖久了也會頭暈、心情掉。任一值歸零太久會生病,病一小時就死,死了點一下重新孵蛋
 namespace pet {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
-  constexpr int FLOOR = 186, BTN_Y = 202, NBTN = 4; constexpr uint32_t MAGIC = 0x50455432;
+  constexpr int FLOOR = 186, BTN_Y = 202, NBTN = 4; constexpr uint32_t MAGIC = 0x50455433;
   constexpr float HUNGER_DEC = 100.0f / 7200, HAPPY_DEC = 100.0f / 10800, ENERGY_DEC = 100.0f / 14400, ENERGY_REC = 100.0f / 1200, POOP_EVERY = 2400, SICK_DIE = 3600, WALK = 45;
-  struct Save { uint32_t magic, born, last; float hunger, happy, energy, sick, poopT; uint8_t poops; bool sleeping; } static sv;
+  struct Save { uint32_t magic, born, last; float hunger, happy, energy, sick, poopT; uint8_t poops; bool sleeping, recorded; } static sv;
+  static Board board = { "pet" }; static int rank;   // 排行:活了幾分鐘
   static Preferences prefs; static bool loaded;
   // 動畫 / 互動狀態(不存)
-  static float px, dir, phase, target, idleT, eatT, jumpY, jumpV, saveT, annoyT, dizzyT, tiltT, hatchT, lean;
+  static float px, dir, phase, target, idleT, eatT, jumpY, jumpV, saveT, annoyT, dizzyT, tiltT, hatchT, lean, shakeT;
   static struct { float x; bool live; } food; static struct { float x, vx, t; int catches; bool live; } ball;
   static face::Mood mood;
 
@@ -36,19 +37,20 @@ namespace pet {
     if (!sv.sleeping && (sv.poopT += dt) > POOP_EVERY && sv.poops < 3) { sv.poopT = 0; sv.poops++; }
     if (sv.hunger <= 0 || sv.happy <= 0 || sv.energy <= 0) sv.sick += dt; else if (sv.hunger > 20 && sv.happy > 20 && sv.energy > 20) sv.sick = fmaxf(0, sv.sick - dt * 2);
     if (sv.sleeping && sv.energy >= 100) sv.sleeping = false;   // 睡飽自己醒
+    if (dead() && !sv.recorded) { sv.recorded = true; rank = board.record(age() / 60); }   // 下一次 save() 會把 recorded 存起來
   }
   static void save() { sv.last = now(); prefs.putBytes("s", &sv, sizeof sv); saveT = 0; }
-  static void newEgg() { uint32_t n = now(); sv = { MAGIC, n, n, 80, 80, 100, 0, 0, 0, false }; save(); hatchT = 0; }
+  static void newEgg() { uint32_t n = now(); sv = { MAGIC, n, n, 80, 80, 100, 0, 0, 0, false, false }; save(); rank = -1; hatchT = 0; }
   static void load() {
     prefs.begin("pet", false);
     if (prefs.getBytes("s", &sv, sizeof sv) != sizeof sv || sv.magic != MAGIC) newEgg();
     uint32_t n = now(), gap = n > sv.last ? n - sv.last : 0; if (gap > 12 * 3600) gap = 12 * 3600;   // 離線補算,最多算 12 小時
     for (; gap > 60; gap -= 60) tick(60); tick(gap);
-    sv.last = n; loaded = true;
+    loaded = true; save();
   }
   void init() {
     if (!loaded) load(); else save();
-    px = 160; dir = 1; phase = idleT = eatT = jumpY = jumpV = saveT = annoyT = dizzyT = tiltT = 0; target = px; food.live = ball.live = false; mood = face::CALM;
+    px = 160; dir = 1; phase = idleT = eatT = jumpY = jumpV = saveT = annoyT = dizzyT = tiltT = shakeT = 0; target = px; food.live = ball.live = false; mood = face::CALM;
     ringlib::reset(); cv.fillScreen(0);
   }
   static void action(int k) {   // 下排按鍵
@@ -74,6 +76,8 @@ namespace pet {
     float s = stage() == 1 ? 0.75f : 1.0f;
     bool tilted = fabsf(c.gx) > 0.35f && !sv.sleeping;
     lean = tilted ? c.gx * 0.6f : 0;
+    shakeT = c.shake > 0.5f ? shakeT + c.dt * 3 : fmaxf(0, shakeT - c.dt);   // 搖晃累積,停了慢慢消
+    if (shakeT > 2 && dizzyT <= 0) { dizzyT = 3; sv.happy = clamp(sv.happy - 5); snd::note(180); buzz(120, 60); }
     if (tilted) { px += c.gx * 220 * c.dt; tiltT += c.dt; if (tiltT > 2 && dizzyT <= 0) { dizzyT = 2.5f; snd::note(180); } } else tiltT = 0;
     if (c.tap && fabsf(c.tx - px) < 22 && c.ty > FLOOR - 60 * s && c.ty < FLOOR) {   // 點牠
       if (sv.sleeping) { sv.sleeping = false; annoyT = 2.5f; snd::note(220); buzz(60, 30); }
@@ -135,7 +139,7 @@ namespace pet {
       cv.fillEllipse((int)px + wob, FLOOR - 16, 13, 17, rgb(240, 230, 200)); cv.fillCircle((int)px - 4 + wob, FLOOR - 20, 3, rgb(255, 250, 230));
       cv.setTextDatum(top_center); cv.setTextSize(1); cv.setTextColor(rgb(160, 160, 160), 0); char t[24]; snprintf(t, sizeof t, "hatching in %ds", (int)(60 - age())); cv.drawString(t, 160, 60);
     } else drawPet();
-    if (dead()) { cv.setTextDatum(middle_center); cv.setTextSize(2); cv.setTextColor(rgb(200, 200, 200), 0); cv.drawString("R.I.P", 160, 70); cv.setTextSize(1); cv.drawString("tap for a new egg", 160, 90); }
+    if (dead()) { char s[20]; snprintf(s, sizeof s, "LIVED %lum", (unsigned long)(age() / 60)); board.draw(s, rank, "tap for a new egg"); }
     drawSparks();
     // 三條值 + 年齡
     static const char* LBL[3] = { "food", "mood", "rest" }; const float* val[3] = { &sv.hunger, &sv.happy, &sv.energy };

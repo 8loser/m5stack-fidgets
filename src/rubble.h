@@ -3,7 +3,7 @@
 
 // ================= 15. 碎石 =================
 // 圓形場地裡的球每撞一次牆就長大;邊上一根尖刺,球碰到就碎成一堆碎石落到底部堆起來,尖刺也跟著變長。
-// 傾斜給重力(落下中的碎石也受影響,停住的不再動),點螢幕在手指處丟一顆新球。碎石堆滿就重來
+// 傾斜給重力(落下中的碎石也受影響,停住的不再動),點螢幕在手指處丟一顆新球,A/C 轉尖刺。碎石堆滿就重來
 namespace rubble {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
   constexpr int CX = 160, CY = 120, RAD = 106, MAXB = 6, MAXP = 260; constexpr float G = 300, R0 = 5, RMAX = 40, GROWF = 1.06f, L0 = 12, LSTEP = 4, LMAX = 70;
@@ -20,7 +20,7 @@ namespace rubble {
   }
   void step(const Ctx& c) {
     if (over) { if ((endT += c.dt) > 2.5f) init(); stepSparks(c.dt); return; }
-    spikeA += 0.15f * c.dt;
+    spikeA += (0.15f + (c.btnC - c.btnA) * 1.5f) * c.dt;   // A/C 轉尖刺
     if (c.tap) { float dx = c.tx - CX, dy = c.ty - CY; if (dx * dx + dy * dy < (RAD - 20) * (RAD - 20)) spawn(c.tx, c.ty); }
     float tx, ty; spikeTip(tx, ty);
     for (auto& o : b) if (o.live) {

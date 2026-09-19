@@ -27,6 +27,10 @@
 #include "colormerge.h"
 #include "inkring.h"
 #include "spawnring.h"
+#include "arcring.h"
+#include "seesaw.h"
+#include "wheels.h"
+#include "spikebowl.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
@@ -56,6 +60,10 @@ static const Game games[] = {
   { 0.28f, colormerge::init, colormerge::step, colormerge::draw, true },
   { 0.00f, inkring::init, inkring::step, inkring::draw },
   { 0.52f, spawnring::init, spawnring::step, spawnring::draw, true },
+  { 0.95f, arcring::init, arcring::step, arcring::draw, true },
+  { 0.35f, seesaw::init,  seesaw::step,  seesaw::draw,  true },
+  { 0.18f, wheels::init,  wheels::step,  wheels::draw,  true },
+  { 0.08f, spikebowl::init, spikebowl::step, spikebowl::draw, true },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0;   // cur<0 = 在選單

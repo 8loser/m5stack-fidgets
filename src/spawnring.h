@@ -3,17 +3,16 @@
 
 // ================= 25. 每彈一次生一顆 =================
 // 無重力的圓場,環是四段帶缺口的旋轉弧;球每撞一次弧就在撞點多生一顆,穿過缺口的球飛走。
-// 傾斜左右改變環的轉速與方向,點螢幕在手指處丟一顆。5 秒內球數沒有創新高就結束,分數是這回合的最高球數,前 5 名存 NVS
+// 傾斜左右改變環的轉速與方向,點螢幕在手指處丟一顆。5 秒內球數沒有創新高就結束,顯示這回合的最高球數
 namespace spawnring {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
   constexpr int CX = 160, CY = 120, RAD = 106, MAXB = 150, BALL_R = 4, NARC = 4; constexpr float SPEED = 120, ARC = 62, FULL = 140;   // 弧 62 度、缺口 28 度
   struct B { float x, y, vx, vy; uint32_t col; bool live; } static b[MAXB];
-  static float rot, endT, stallT; static int nball, peak, rank; static bool over;
-  static Board board = { "spawnring" };
+  static float rot, endT, stallT; static int nball, peak, best; static bool over;
   static void spawn(float x, float y) { for (auto& o : b) if (!o.live) { float a = frand() * 6.283f; o = { x, y, cosf(a) * SPEED, sinf(a) * SPEED, hsv(frand()), true }; nball++; if (nball > peak) { peak = nball; stallT = 0; } return; } }
   static bool onArc(float ang) { float a = fmodf(ang - rot + 720, 360); return fmodf(a, 90) < ARC; }   // 每 90 度一段弧
   void init() {
-    memset(b, 0, sizeof b); rot = endT = stallT = 0; nball = peak = 0; rank = -1; over = false; spawn(CX, CY); ringlib::reset(); cv.fillScreen(0); }
+    memset(b, 0, sizeof b); rot = endT = stallT = 0; nball = peak = 0; over = false; spawn(CX, CY); ringlib::reset(); cv.fillScreen(0); }
   void step(const Ctx& c) {
     rot += (30 + c.gx * 80 + (c.btnC - c.btnA) * 80) * c.dt;   // 傾斜或 A/C 控制轉速與方向
     if (over) { if ((endT += c.dt) > 2 && (c.tap || c.tapA || c.tapC)) init(); stepSparks(c.dt); return; }
@@ -41,7 +40,7 @@ namespace spawnring {
       if (rv < 0) { p.vx += nx * rv; p.vy += ny * rv; q.vx -= nx * rv; q.vy -= ny * rv; }
       setSpeed(p.vx, p.vy, SPEED); setSpeed(q.vx, q.vy, SPEED);
     }
-    if ((stallT += c.dt) > 5) { over = true; rank = board.record(peak); buzz(150, 150); snd::note(rank == 0 ? 800 : rank >= 0 ? 600 : 300); }   // 5 秒沒創新高就結束
+    if ((stallT += c.dt) > 5) { over = true; if (peak > best) best = peak; buzz(150, 150); snd::note(peak >= best ? 700 : 300); }   // 5 秒沒創新高就結束
     stepSparks(c.dt);
   }
   void draw() {
@@ -49,8 +48,8 @@ namespace spawnring {
     if (!over) for (int k = 0; k < NARC; k++) ringlib::arc(CX, CY, RAD, rot + k * 90, rot + k * 90 + ARC, hsv(k / (float)NARC + 0.1f));
     for (auto& o : b) if (o.live) { cv.fillCircle((int)o.x, (int)o.y, BALL_R, o.col); cv.drawPixel((int)o.x - 1, (int)o.y - 1, rgb(255, 255, 255)); }
     drawSparks();
-    if (over) { char s[20]; snprintf(s, sizeof s, "PEAK %d", peak); board.draw(s, rank); }
-    char t[32]; snprintf(t, sizeof t, "balls %d  peak %d  best %u", nball, peak, board.best());
+    if (over) { cv.setTextDatum(middle_center); cv.setTextSize(2); cv.setTextColor(rgb(255, 230, 0), 0); char s[20]; snprintf(s, sizeof s, "PEAK %d", peak); cv.drawString(s, CX, CY - 10); cv.setTextSize(1); cv.setTextColor(rgb(200, 200, 200), 0); cv.drawString("tap to retry", CX, CY + 12); }
+    char t[32]; snprintf(t, sizeof t, "balls %d  peak %d  best %d", nball, peak, best);
     cv.setTextDatum(top_left); cv.setTextSize(1); cv.setTextColor(rgb(160, 160, 160), 0); cv.drawString(t, 4, 4);
   }
 }

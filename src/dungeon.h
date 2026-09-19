@@ -190,9 +190,10 @@ namespace dungeon {
     }
     drawSparks();
     cv.fillRect(0, 0, W, TOP, rgb(20, 18, 24));   // HUD:血條、攻防、層數
-    cv.fillCircle(8, 8, 3, rgb(255, 70, 110)); cv.fillRect(16, 4, 80, 8, rgb(60, 30, 30)); cv.fillRect(16, 4, (int)(80 * hero.hp / 100), 8, rgb(220, 50, 70));
-    char t[40]; snprintf(t, sizeof t, "ATK %d DEF %d  F%d  $%d", hero.atk, hero.def, level + 1, coins);
-    cv.setTextDatum(middle_left); cv.setTextSize(1); cv.setTextColor(rgb(220, 210, 180), rgb(20, 18, 24)); cv.drawString(t, 104, 8);
+    cv.fillRect(4, 4, 80, 8, rgb(60, 30, 30)); cv.fillRect(4, 4, (int)(80 * hero.hp / 100), 8, rgb(220, 50, 70));   // 勇者血條
+    if (boss.live) { cv.fillRect(216, 4, 100, 8, rgb(50, 30, 50)); cv.fillRect(216, 4, (int)(100 * boss.hp / boss.maxHp), 8, rgb(200, 60, 200)); cv.drawRect(216, 4, 100, 8, rgb(150, 100, 150)); }   // Boss 血條(右上)
+    char t[40]; snprintf(t, sizeof t, "ATK%d DEF%d F%d $%d", hero.atk, hero.def, level + 1, coins);
+    cv.setTextDatum(middle_left); cv.setTextSize(1); cv.setTextColor(rgb(220, 210, 180), rgb(20, 18, 24)); cv.drawString(t, 90, 8);
     if (over) { snprintf(t, sizeof t, "FLOORS %d", level); board.draw(t, rank); }
   }
 }

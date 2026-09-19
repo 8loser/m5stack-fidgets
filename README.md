@@ -35,10 +35,15 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 | 27 | 蹺蹺板 | 彈珠壓在蹺蹺板哪邊那邊就沉,點一端壓下去、A/C 全部壓向一邊 |
 | 28 | 雙輪 | 屋頂把彈珠分到左右槳輪,按住 A / C 轉左 / 右輪把口袋裡的彈珠倒下去 |
 | 29 | 尖刺碗 | 碗底有刺,傾斜推彈珠、A/C 轉碗把彈珠倒出去、別碰到刺(碰到就破) |
+| 30 | 罰球 | 傾斜瞄準、點螢幕射門,守門員 Kevin 每失一球就變大;10 球比進球數,前 5 名排行 |
+| 31 | 每彈一次挖一塊 | Minecraft 式地層,球每撞到一塊就敲掉、小彈一下繼續鑽;有洞穴與礦,底部岩漿;傾斜輕推、點螢幕往下砸;碰到岩漿結束比深度,前 5 名排行 |
+| 32 | 物理方塊堆 | 俄羅斯方塊的形狀但是真剛體,會翻會歪;傾斜推、點螢幕轉;一列填滿就消;堆到頂結束,比列數,前 5 名排行 |
 
 26 到 29 是彈珠系列(取自第四支影片):6 色彈珠輪流倒進場地,掉出底部就依顏色堆進右邊的管子累積,哪根先滿就全部清空重來,沒有輸贏。全部都是傾斜給左右重力、點螢幕推開彈珠。
 
-有輸贏的遊戲(小恐龍、壓板與 Seed、電子雞的壽命)結束時顯示前 5 名排行,存 NVS。
+有輸贏的遊戲(小恐龍、壓板與 Seed、電子雞的壽命、罰球、挖地、方塊堆)結束時顯示前 5 名排行,存 NVS。
+
+30 到 32 取自第五支影片的 2:37、3:17、4:09 三段。
 
 6 到 18 取自另一支參考影片的段落。所有遊戲都吃傾斜(重力或方向偏向)與觸控(踢球、生東西或推開),各遊戲檔開頭的註解寫了具體互動。
 
@@ -68,6 +73,6 @@ PlatformIO + Arduino framework,依賴 M5Unified(`platformio.ini`)。
 - `src/main.cpp`:選單與主迴圈;新遊戲寫一個 `.h` 提供 `init / step / draw`,在 `games[]` 加一行
 - `src/common.h`:畫布、Ctx、顏色、震動、音效合成、圓形場地反彈 / 點擊踢球 / 定速等共用函式
 - `src/ringlib.h`:環系列共用(弧線、球與扇區碰撞、火花、脫落環片)
-- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 13)`tri.h` `merge.h` `grow.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h`:各遊戲
+- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 13)`tri.h` `merge.h` `grow.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h`:各遊戲
 - `src/marblelib.h`:彈珠系列共用(彈珠池、線段 / 圓 / 弧碰撞、子步物理、右側色管)
 - `src/face.h`:火柴人的臉與表情(電子雞、盪繩共用);`src/ragdoll.h`:Verlet 布娃娃骨架(盪繩用)

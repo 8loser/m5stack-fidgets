@@ -31,6 +31,9 @@
 #include "seesaw.h"
 #include "wheels.h"
 #include "spikebowl.h"
+#include "penalty.h"
+#include "dig.h"
+#include "stack.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
@@ -64,6 +67,9 @@ static const Game games[] = {
   { 0.35f, seesaw::init,  seesaw::step,  seesaw::draw,  true },
   { 0.18f, wheels::init,  wheels::step,  wheels::draw,  true },
   { 0.08f, spikebowl::init, spikebowl::step, spikebowl::draw, true },
+  { 0.33f, penalty::init, penalty::step, penalty::draw },
+  { 0.10f, dig::init,     dig::step,     dig::draw     },
+  { 0.60f, stack::init,   stack::step,   stack::draw   },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0;   // cur<0 = 在選單

@@ -32,6 +32,21 @@ static uint32_t hsv(float h) {  // h 0..1, 全飽和
   switch (i % 6) { case 0: return rgb(255, t, 0); case 1: return rgb(q, 255, 0); case 2: return rgb(0, 255, t);
                    case 3: return rgb(0, q, 255); case 4: return rgb(t, 0, 255); default: return rgb(255, 0, q); }
 }
+// 圓形場地共用:球超出內壁就推回並反彈,回傳撞擊的法向速度(沒撞回 0)
+static float wallCircle(float& x, float& y, float& vx, float& vy, float r, float cx, float cy, float R, float rest = 1) {
+  float dx = x - cx, dy = y - cy, d = sqrtf(dx * dx + dy * dy) + 1e-3f, lim = R - r;
+  if (d < lim) return 0;
+  float nx = dx / d, ny = dy / d, vn = vx * nx + vy * ny;
+  x = cx + nx * lim; y = cy + ny * lim;
+  if (vn <= 0) return 0;
+  vx -= (1 + rest) * vn * nx; vy -= (1 + rest) * vn * ny; return vn;
+}
+// 點螢幕:把物體朝手指方向以速度 K 踢出去
+static void tapKick(const Ctx& c, float x, float y, float& vx, float& vy, float K) {
+  float dx = c.tx - x, dy = c.ty - y, d = sqrtf(dx * dx + dy * dy) + 1e-3f; vx = dx / d * K; vy = dy / d * K;
+}
+// 速度長度固定成 s(重力只改方向,不改快慢)
+static void setSpeed(float& vx, float& vy, float s) { float v = sqrtf(vx * vx + vy * vy); if (v > 1e-3f) { vx *= s / v; vy *= s / v; } }
 static void buzz(uint8_t level, uint32_t ms) { if (muted) return; M5.Power.setVibration(level); vibUntil = millis() + ms; }
 
 // 音效。note():鋼琴感的音(6 個諧波、快起音、約 1 秒衰減,高次諧波衰得快),音高吸到 C 大調五聲音階

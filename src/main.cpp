@@ -7,6 +7,18 @@
 #include "expand.h"
 #include "ttt.h"
 #include "slicer.h"
+#include "gaprings.h"
+#include "tri.h"
+#include "merge.h"
+#include "grow.h"
+#include "balloon.h"
+#include "split.h"
+#include "paint.h"
+#include "beat.h"
+#include "rubble.h"
+#include "penta.h"
+#include "war.h"
+#include "shatter.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); };
@@ -16,6 +28,19 @@ static const Game games[] = {
   { 0.15f, expand::init,  expand::step,  expand::draw  },
   { 0.50f, ttt::init,     ttt::step,     ttt::draw     },
   { 0.70f, slicer::init,  slicer::step,  slicer::draw  },
+  { 0.05f, gaprings::initIn,  gaprings::step, gaprings::draw },
+  { 0.90f, tri::init,     tri::step,     tri::draw     },
+  { 0.40f, merge::init,   merge::step,   merge::draw   },
+  { 0.78f, grow::init,    grow::step,    grow::draw    },
+  { 0.12f, balloon::init, balloon::step, balloon::draw },
+  { 0.98f, split::init,   split::step,   split::draw   },
+  { 0.60f, paint::init,   paint::step,   paint::draw   },
+  { 0.85f, gaprings::initOut, gaprings::step, gaprings::draw },
+  { 0.30f, beat::init,    beat::step,    beat::draw    },
+  { 0.08f, rubble::init,  rubble::step,  rubble::draw  },
+  { 0.45f, penta::init,   penta::step,   penta::draw   },
+  { 0.62f, war::init,     war::step,     war::draw     },
+  { 0.20f, shatter::init, shatter::step, shatter::draw },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0;   // cur<0 = 在選單

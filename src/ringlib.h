@@ -11,7 +11,8 @@ namespace ringlib {
   // ponytail: 用短線段畫弧,drawArc 每次掃整個外接矩形,幾十條會掉幀
   static void arc(float cx, float cy, float r, float a0, float a1, uint32_t col) {
     float px = cx + r * cosf(a0 * DEG_TO_RAD), py = cy + r * sinf(a0 * DEG_TO_RAD);
-    for (float a = a0 + 5; a <= a1 + 0.01f; a += 5) {
+    for (float a = a0 + 5; a < a1 + 5; a += 5) {
+      if (a > a1) a = a1;   // 最後一段補到 a1,短弧才不會缺尾
       float x = cx + r * cosf(a * DEG_TO_RAD), y = cy + r * sinf(a * DEG_TO_RAD);
       cv.drawLine((int)px, (int)py, (int)x, (int)y, col); cv.drawLine((int)px, (int)py + 1, (int)x, (int)y + 1, col);
       px = x; py = y;

@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-// ================= 1. 彈珠 =================
+// ================= 彈珠 =================
 // 傾斜給重力、手指排斥球、搖一下裝置球全部散開
 namespace balls {
   constexpr int N = 18; constexpr float G = 900, REST = 0.85f;

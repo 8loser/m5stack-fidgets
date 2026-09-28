@@ -1,6 +1,6 @@
 // M5Stack Core2 物理模擬小遊戲合集
 // 底部三個觸控鍵:選單 A/C 換卡片、B 進入;遊戲內 A/C 是遊戲操作(有東西在轉的遊戲用來轉它,其他預設當往左 / 往右傾斜)、B 長按回選單、雙擊重置
-// 新遊戲:寫一個 xxx.h(namespace 內提供 init/step/draw),include 後在 games[] 加一行
+// 新遊戲:寫一個 xxx.h(namespace 內提供 init/step/draw),include 後在 games[] 加一行(key 取不重複的名字);選單編號就是 games[] 的順序
 #include "common.h"
 #include <Preferences.h>
 #include "balls.h"
@@ -43,52 +43,51 @@
 #include "racer.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
-struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
+struct Game { const char* key; float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // key:進入次數存 NVS 用的名字(<= 15 字);acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
 static const Game games[] = {
-  { 0.55f, balls::init,  balls::step,  balls::draw  },
-  { 0.33f, pinball::init, pinball::step, pinball::draw, true },
-  { 0.50f, ttt::init,     ttt::step,     ttt::draw,     true },
-  { 0.70f, slicer::init,  slicer::step,  slicer::draw  },
-  { 0.05f, gaprings::initIn,  gaprings::step, gaprings::draw, true },
-  { 0.90f, overflow::init, overflow::step, overflow::draw, true },
-  { 0.40f, merge::init,   merge::step,   merge::draw   },
-  { 0.12f, balloon::init, balloon::step, balloon::draw, true },
-  { 0.98f, split::init,   split::step,   split::draw   },
-  { 0.60f, paint::init,   paint::step,   paint::draw   },
-  { 0.85f, gaprings::initOut, gaprings::step, gaprings::draw, true },
-  { 0.30f, beat::init,    beat::step,    beat::draw    },
-  { 0.08f, rubble::init,  rubble::step,  rubble::draw,  true },
-  { 0.45f, penta::init,   penta::step,   penta::draw,   true },
-  { 0.62f, war::init,     war::step,     war::draw     },
-  { 0.20f, shatter::init, shatter::step, shatter::draw, true },
-  { 0.10f, swing::init,   swing::step,   swing::draw   },
-  { 0.66f, dino::init,    dino::step,    dino::draw    },
-  { 0.75f, seed::init,    seed::step,    seed::draw    },
-  { 0.28f, colormerge::init, colormerge::step, colormerge::draw, true },
-  { 0.00f, inkring::init, inkring::step, inkring::draw },
-  { 0.52f, spawnring::init, spawnring::step, spawnring::draw, true },
-  { 0.95f, arcring::init, arcring::step, arcring::draw, true },
-  { 0.35f, seesaw::init,  seesaw::step,  seesaw::draw,  true },
-  { 0.18f, wheels::init,  wheels::step,  wheels::draw,  true },
-  { 0.08f, spikebowl::init, spikebowl::step, spikebowl::draw, true },
-  { 0.33f, penalty::init, penalty::step, penalty::draw },
-  { 0.10f, dig::init,     dig::step,     dig::draw     },
-  { 0.60f, stack::init,   stack::step,   stack::draw   },
-  { 0.02f, nbguess::init, nbguess::step, nbguess::draw, true },
-  { 0.12f, nbbuild::init, nbbuild::step, nbbuild::draw, true },
-  { 0.22f, nbcompare::init, nbcompare::step, nbcompare::draw, true },
-  { 0.58f, mathrun::init, mathrun::step, mathrun::draw, true },
-  { 0.30f, dungeon::init, dungeon::step, dungeon::draw, true },
-  { 0.42f, brawl::init,   brawl::step,   brawl::draw   },
-  { 0.93f, redlight::init, redlight::step, redlight::draw, true },
-  { 0.62f, spintop::init, spintop::step, spintop::draw, true },
-  { 0.03f, jam::init,     jam::step,     jam::draw,     true },
-  { 0.48f, racer::init,   racer::step,   racer::draw   },
+  { "balls", 0.55f, balls::init,  balls::step,  balls::draw  },
+  { "pinball", 0.33f, pinball::init, pinball::step, pinball::draw, true },
+  { "ttt", 0.50f, ttt::init,     ttt::step,     ttt::draw,     true },
+  { "slicer", 0.70f, slicer::init,  slicer::step,  slicer::draw  },
+  { "overflow", 0.90f, overflow::init, overflow::step, overflow::draw, true },
+  { "merge", 0.40f, merge::init,   merge::step,   merge::draw   },
+  { "balloon", 0.12f, balloon::init, balloon::step, balloon::draw, true },
+  { "split", 0.98f, split::init,   split::step,   split::draw   },
+  { "paint", 0.60f, paint::init,   paint::step,   paint::draw   },
+  { "gaprings", 0.85f, gaprings::init, gaprings::step, gaprings::draw, true },
+  { "beat", 0.30f, beat::init,    beat::step,    beat::draw    },
+  { "rubble", 0.08f, rubble::init,  rubble::step,  rubble::draw,  true },
+  { "penta", 0.45f, penta::init,   penta::step,   penta::draw,   true },
+  { "war", 0.62f, war::init,     war::step,     war::draw     },
+  { "shatter", 0.20f, shatter::init, shatter::step, shatter::draw, true },
+  { "swing", 0.10f, swing::init,   swing::step,   swing::draw   },
+  { "dino", 0.66f, dino::init,    dino::step,    dino::draw    },
+  { "seed", 0.75f, seed::init,    seed::step,    seed::draw    },
+  { "colormerge", 0.28f, colormerge::init, colormerge::step, colormerge::draw, true },
+  { "inkring", 0.00f, inkring::init, inkring::step, inkring::draw },
+  { "spawnring", 0.52f, spawnring::init, spawnring::step, spawnring::draw, true },
+  { "arcring", 0.95f, arcring::init, arcring::step, arcring::draw, true },
+  { "seesaw", 0.35f, seesaw::init,  seesaw::step,  seesaw::draw,  true },
+  { "wheels", 0.18f, wheels::init,  wheels::step,  wheels::draw,  true },
+  { "spikebowl", 0.08f, spikebowl::init, spikebowl::step, spikebowl::draw, true },
+  { "penalty", 0.33f, penalty::init, penalty::step, penalty::draw },
+  { "dig", 0.10f, dig::init,     dig::step,     dig::draw     },
+  { "stack", 0.60f, stack::init,   stack::step,   stack::draw   },
+  { "nbguess", 0.02f, nbguess::init, nbguess::step, nbguess::draw, true },
+  { "nbbuild", 0.12f, nbbuild::init, nbbuild::step, nbbuild::draw, true },
+  { "nbcompare", 0.22f, nbcompare::init, nbcompare::step, nbcompare::draw, true },
+  { "mathrun", 0.58f, mathrun::init, mathrun::step, mathrun::draw, true },
+  { "dungeon", 0.30f, dungeon::init, dungeon::step, dungeon::draw, true },
+  { "brawl", 0.42f, brawl::init,   brawl::step,   brawl::draw   },
+  { "redlight", 0.93f, redlight::init, redlight::step, redlight::draw, true },
+  { "spintop", 0.62f, spintop::init, spintop::step, spintop::draw, true },
+  { "jam", 0.03f, jam::init,     jam::step,     jam::draw,     true },
+  { "racer", 0.48f, racer::init,   racer::step,   racer::draw   },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0, started = -1;   // cur<0 = 在選單;started = 已經 init 過的遊戲(進遊戲第一幀保險重置用)
-static uint16_t plays[NG]; static Preferences playPrefs;   // 各遊戲進入次數,存 NVS;games[] 順序改了計數就會對不上
-static void enterGame() { cur = sel; plays[sel]++; playPrefs.putBytes("n", plays, sizeof plays); games[sel].init(); }   // 進遊戲一律重置,不接著預覽玩
+static uint16_t plays[NG]; static Preferences playPrefs;   // 各遊戲進入次數,存 NVS,以 games[].key 為 key,順序改了不影響
+static void enterGame() { cur = sel; playPrefs.putUShort(games[sel].key, ++plays[sel]); games[sel].init(); }   // 進遊戲一律重置,不接著預覽玩
 
 // 選單用第二層畫布;被選中的遊戲照常畫在 cv,再縮小貼進卡片
 static M5Canvas menu(&M5.Display);
@@ -120,7 +119,8 @@ void setup() {
   menu.setColorDepth(8);
   if (!menu.createSprite(W, H)) { menu.setPsram(true); menu.createSprite(W, H); }
   buildFade();
-  playPrefs.begin("plays", false); playPrefs.getBytes("n", plays, sizeof plays);
+  playPrefs.begin("plays", false); playPrefs.remove("n");   // "n" 是舊版照位置存的整包計數,已作廢
+  for (int i = 0; i < NG; i++) plays[i] = playPrefs.getUShort(games[i].key, 0);
 }
 
 void loop() {

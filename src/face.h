@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-// ================= 火柴人的臉(布娃娃、盪繩、電子雞共用)=================
+// ================= 火柴人的臉(布娃娃、盪繩等共用)=================
 // 在頭心 (cx,cy) 畫眼睛和嘴;rx,ry 是臉的「右」方向,dx,dy 是「下」方向(單位向量),頭歪了臉跟著轉
 namespace face {
   enum Mood { CALM, HAPPY, SCARED, HURT, DIZZY, SLEEPY, SAD, HUNGRY, EATING, SICK, DEAD, ANNOYED, NMOOD };

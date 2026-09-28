@@ -19,7 +19,6 @@
 #include "penta.h"
 #include "war.h"
 #include "shatter.h"
-#include "pet.h"
 #include "swing.h"
 #include "dino.h"
 #include "seed.h"
@@ -62,7 +61,6 @@ static const Game games[] = {
   { 0.45f, penta::init,   penta::step,   penta::draw,   true },
   { 0.62f, war::init,     war::step,     war::draw     },
   { 0.20f, shatter::init, shatter::step, shatter::draw, true },
-  { 0.00f, pet::init,     pet::step,     pet::draw     },
   { 0.10f, swing::init,   swing::step,   swing::draw   },
   { 0.66f, dino::init,    dino::step,    dino::draw    },
   { 0.75f, seed::init,    seed::step,    seed::draw    },

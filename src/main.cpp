@@ -4,7 +4,7 @@
 #include "common.h"
 #include <Preferences.h>
 #include "balls.h"
-#include "plinko.h"
+#include "pinball.h"
 #include "expand.h"
 #include "ttt.h"
 #include "slicer.h"
@@ -47,7 +47,7 @@
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
 static const Game games[] = {
   { 0.55f, balls::init,  balls::step,  balls::draw  },
-  { 0.33f, plinko::init, plinko::step, plinko::draw },
+  { 0.33f, pinball::init, pinball::step, pinball::draw, true },
   { 0.15f, expand::init,  expand::step,  expand::draw,  true },
   { 0.50f, ttt::init,     ttt::step,     ttt::draw,     true },
   { 0.70f, slicer::init,  slicer::step,  slicer::draw  },

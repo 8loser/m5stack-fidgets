@@ -3,10 +3,10 @@
 
 // ================= 切割 =================
 // 整個螢幕裡的多邊形帶著重力彈跳翻滾,開局點一下的位置放一顆不動的小球當切割點(放之前圖塊不長大);多邊形掃過小球就沿掃過的路徑被切成兩片,
-// 切下來的小半換新顏色、大半保留原色,所有片都會慢慢長大。有一塊長到超過螢幕 1/10 就整圈炸開,比共切了幾刀,前 5 名排行。搖一下全部噴開、亂轉
+// 切下來的小半換新顏色、大半保留原色,所有片都會慢慢長大。有一塊長到超過螢幕 1/20 就整圈炸開,比共切了幾刀,前 5 名排行。搖一下全部噴開、亂轉
 namespace slicer {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
-  constexpr int CXS = W / 2, CYS = H / 2, MAXP = 64, MAXV = 10; constexpr float G = 300, MIN_AREA = 25, REST = 0.75f, GROW = 0.08f, MAX_R = 120, BIG = W * H / 10.0f;   // 每秒長大 8%,最遠頂點到 120 px 停(免得細長碎片比螢幕還大);BIG:任一塊面積超過就結束
+  constexpr int CXS = W / 2, CYS = H / 2, MAXP = 64, MAXV = 10; constexpr float G = 300, MIN_AREA = 25, REST = 0.75f, GROW = 0.08f, MAX_R = 120, BIG = W * H / 20.0f;   // 每秒長大 8%,最遠頂點到 120 px 停(免得細長碎片比螢幕還大);BIG:任一塊面積超過就結束
   struct Poly { int n; float x[MAXV], y[MAXV]; float cx, cy, vx, vy, ang, vang; uint32_t col; bool live, touching, round; float ex, ey; } static p[MAXP];
   static bool over; static float endT, biggest; static int cuts, rank; static float kx, ky; static bool placed;   // kx, ky:切割點   // biggest:最大那塊的面積
   static Board board = { "slicer" };
@@ -83,7 +83,7 @@ namespace slicer {
         else if (!in && q.touching) { q.touching = false; cut(q, q.ex, q.ey, lx, ly); }
       }
     }
-    if (!over && biggest > BIG) {   // 有一塊超過螢幕 1/10:全部往外炸。片數滿了不結束,切下的另一半直接消失(刀數照算),圖塊照樣長大
+    if (!over && biggest > BIG) {   // 有一塊超過螢幕 1/20:全部往外炸。片數滿了不結束,切下的另一半直接消失(刀數照算),圖塊照樣長大
       over = true; rank = board.record(cuts); buzz(200, 150);
       for (auto& q : p) if (q.live) { float dx = q.cx - kx, dy = q.cy - ky, d = sqrtf(dx * dx + dy * dy) + 1; q.vx = dx / d * 350; q.vy = dy / d * 350; q.vang = (frand() - 0.5f) * 8; }
     }
@@ -100,7 +100,7 @@ namespace slicer {
     if (placed) cv.fillCircle((int)kx, (int)ky, 3, rgb(255, 255, 255));
     else { cv.setTextDatum(middle_center); cv.setTextSize(1); cv.setTextColor(rgb(200, 200, 200), 0); cv.drawString("tap to place cutter", W / 2, H - 16); }
     drawSparks();
-    char s[24]; snprintf(s, sizeof s, "cuts %d  max %d%%", cuts, (int)(biggest * 100 / (W * H)));
+    char s[24]; snprintf(s, sizeof s, "cuts %d  max %d%%", cuts, (int)(biggest * 100 / BIG));
     cv.setTextDatum(top_left); cv.setTextSize(1); cv.setTextColor(rgb(160, 160, 160), 0); cv.drawString(s, 4, 4);
     if (over) { snprintf(s, sizeof s, "CUTS %d", cuts); board.draw(s, rank); }
   }

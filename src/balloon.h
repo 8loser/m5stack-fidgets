@@ -3,20 +3,20 @@
 
 // ================= 10. 氣球與尖刺 =================
 // 圓形場地邊上有 4 根尖刺,氣球每彈一次就充大一點,只有碰到尖刺才會破;破一個生兩個。
-// 傾斜給重力,點螢幕在手指處生一顆氣球。生到上限或塞滿就全部飛出重來
+// 傾斜給重力,A/C 轉動尖刺,點螢幕在手指處生一顆氣球。生到上限或塞滿就全部飛出重來
 namespace balloon {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
-  constexpr int CX = 160, CY = 120, RAD = 106, MAXB = 44, NSPIKE = 4, SPIKE_L = 14; constexpr float G = 260, REST = 0.9f, R0 = 4, RMAX = 26, INFLATE = 1.07f;
+  constexpr int CX = 160, CY = 120, RAD = 106, MAXB = 44, NSPIKE = 4, SPIKE_L = 14; constexpr float G = 260, REST = 0.9f, R0 = 4, RMAX = 26, INFLATE = 1.07f, SPIN = 2;   // A/C 每秒轉 2 弧度
   struct B { float x, y, vx, vy, r; uint32_t col; bool live; } static b[MAXB];
-  static int pops; static bool over; static float endT;
+  static int pops; static bool over; static float endT, rot;   // rot = 尖刺整圈的旋轉角(弧度)
   static void spawn(float x, float y) {
     for (auto& o : b) if (!o.live) { float a = frand() * 6.283f; o = { x, y, cosf(a) * 120, sinf(a) * 120, R0, hsv(frand()), true }; return; }
   }
-  static void spikeTip(int k, float& tx, float& ty) { float a = k * 1.5708f + 0.4f; tx = CX + (RAD - SPIKE_L) * cosf(a); ty = CY + (RAD - SPIKE_L) * sinf(a); }
-  void init() { memset(b, 0, sizeof b); pops = 0; over = false; endT = 0; ringlib::reset(); spawn(CX, CY); cv.fillScreen(0); }
+  static void spikeTip(int k, float& tx, float& ty) { float a = k * 1.5708f + 0.4f + rot; tx = CX + (RAD - SPIKE_L) * cosf(a); ty = CY + (RAD - SPIKE_L) * sinf(a); }
+  void init() { memset(b, 0, sizeof b); pops = 0; over = false; endT = 0; rot = 0; ringlib::reset(); spawn(CX, CY); cv.fillScreen(0); }
   void step(const Ctx& c) {
     if (!over && c.tap) { float dx = c.tx - CX, dy = c.ty - CY; if (dx * dx + dy * dy < (RAD - 20) * (RAD - 20)) spawn(c.tx, c.ty); }
-    int live = 0;
+    int live = 0; rot += (c.btnC - c.btnA) * SPIN * c.dt;
     for (auto& o : b) if (o.live) {
       live++;
       o.vx += c.gx * G * c.dt; o.vy += c.gy * G * c.dt;
@@ -52,7 +52,7 @@ namespace balloon {
     if (!over) {
       cv.drawCircle(CX, CY, RAD, wc);
       for (int k = 0; k < NSPIKE; k++) {   // 尖刺:底在環上、尖端朝內
-        float a = k * 1.5708f + 0.4f, tx, ty; spikeTip(k, tx, ty);
+        float a = k * 1.5708f + 0.4f + rot, tx, ty; spikeTip(k, tx, ty);
         cv.fillTriangle((int)tx, (int)ty, (int)(CX + RAD * cosf(a - 0.06f)), (int)(CY + RAD * sinf(a - 0.06f)), (int)(CX + RAD * cosf(a + 0.06f)), (int)(CY + RAD * sinf(a + 0.06f)), rgb(255, 255, 255));
       }
     }

@@ -4,7 +4,7 @@
 // ================= 合成圓 =================
 // 螢幕裡不斷從頂端隨機位置掉下多邊形,兩個相同的碰到就合成邊數多一級的(三角→四角→五角→六角→圓),
 // 兩個圓再合成更大的三角形,一直循環下去,每級都比上一級大。
-// 傾斜給重力,點螢幕把附近的彈飛。10 秒內沒有任何合成就結束,比撐了幾秒,前 5 名排行
+// 傾斜給重力,搖一下全部噴開,點螢幕把附近的彈飛。10 秒內沒有任何合成就結束,比撐了幾秒,前 5 名排行
 namespace merge {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks;
   constexpr int CX = W / 2, CY = H / 2, MAXB = 40, LV = 5; constexpr float G = 320, REST = 0.4f, IDLE = 10, KICK = 900;   // LV:一輪幾種形狀,最後一種是圓
@@ -22,20 +22,13 @@ namespace merge {
     if (over && (endT += c.dt) > 1.5f && c.tap) { init(); return; }
     if (!over) { t += c.dt; idleT += c.dt; }
     if (!over && (dropT += c.dt) > 1.0f) { dropT = 0; spawn(rad(1) + frand() * (W - 2 * rad(1)), rad(1), frand() < 0.7f ? 0 : 1); }
-    if (!over && c.tap) for (auto& o : b) if (o.live) {   // 點螢幕把手指附近的彈飛,力道隨距離線性遞減;範圍含自身半徑讓大的也點得到
-      float dx = o.x - c.tx, dy = o.y - c.ty, d = sqrtf(dx * dx + dy * dy) + 1, R = 60 + rad(o.lv);
-      if (d < R) { float f = KICK * (1 - d / R); o.vx += dx / d * f; o.vy += dy / d * f; }
-    }
+    if (!over && c.shake > SHAKE) { for (auto& o : b) if (o.live) shakeKick(c, o.vx, o.vy); buzz(80, 30); }
+    if (!over && c.tap) for (auto& o : b) if (o.live) tapPush(c, o.x, o.y, o.vx, o.vy, rad(o.lv), KICK);
     for (auto& o : b) if (o.live) {
       o.vx += c.gx * G * c.dt; o.vy += c.gy * G * c.dt; o.vx *= 0.995f; o.vy *= 0.995f;
       o.x += o.vx * c.dt; o.y += o.vy * c.dt; o.rot += o.vx * 0.01f * c.dt;
       if (over) continue;
-      float r = rad(o.lv), hit = 0;   // 螢幕四邊當牆
-      if (o.x < r) { o.x = r; if (o.vx < 0) { hit = fmaxf(hit, -o.vx); o.vx *= -REST; } }
-      if (o.x > W - r) { o.x = W - r; if (o.vx > 0) { hit = fmaxf(hit, o.vx); o.vx *= -REST; } }
-      if (o.y < r) { o.y = r; if (o.vy < 0) { hit = fmaxf(hit, -o.vy); o.vy *= -REST; } }
-      if (o.y > H - r) { o.y = H - r; if (o.vy > 0) { hit = fmaxf(hit, o.vy); o.vy *= -REST; } }
-      if (hit > 120) snd::click();
+      if (wallScreen(o.x, o.y, o.vx, o.vy, rad(o.lv), REST) > 120) snd::click();
     }
     if (!over) for (int i = 0; i < MAXB; i++) if (b[i].live) for (int j = i + 1; j < MAXB; j++) if (b[j].live) {   // ponytail: O(n^2),n<=40
       auto& p = b[i]; auto& q = b[j];

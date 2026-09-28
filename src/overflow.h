@@ -15,7 +15,7 @@ namespace overflow {
   void init() { memset(t, 0, sizeof t); escaped = 0; over = false; endT = 0; rot = -45; ringlib::reset(); spawn(160, 120); cv.fillScreen(0); }
   void step(const Ctx& c) {
     int live = 0; rot += (c.btnC - c.btnA) * SPIN * c.dt;
-    if (c.shake > 0.8f) { for (auto& o : t) if (o.live && !o.out) { float a = frand() * 6.283f, v = 300 + c.shake * 300; o.vx += cosf(a) * v; o.vy += sinf(a) * v; } buzz(80, 30); }   // 同遊戲 1
+    if (c.shake > SHAKE) { for (auto& o : t) if (o.live && !o.out) shakeKick(c, o.vx, o.vy); buzz(80, 30); }   // 同遊戲 1
     for (auto& o : t) if (o.live) {
       live++;
       if (c.tap) { float dx = o.x - c.tx, dy = o.y - c.ty, d2 = dx * dx + dy * dy + 100; if (d2 < 70 * 70) { float f = 2.5e5f / d2; o.vx += dx / sqrtf(d2) * f; o.vy += dy / sqrtf(d2) * f; } }

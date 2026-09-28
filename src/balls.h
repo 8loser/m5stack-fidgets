@@ -15,7 +15,7 @@ namespace balls {
   }
   static void hit(float v) { if (v > 200) { snd::note(200 + v); if (v > 500) buzz(120, 25); } }
   void step(const Ctx& c) {
-    if (c.shake > 0.8f) { for (auto& o : b) { float a = frand() * 6.283f, v = 300 + c.shake * 300; o.vx += cosf(a) * v; o.vy += sinf(a) * v; } buzz(80, 30); }   // 搖一下:全部往隨機方向噴開
+    if (c.shake > SHAKE) { for (auto& o : b) shakeKick(c, o.vx, o.vy); buzz(80, 30); }   // 搖一下:全部往隨機方向噴開
     for (auto& o : b) {
       o.vx += c.gx * G * c.dt; o.vy += c.gy * G * c.dt;
       if (c.touch) {  // 手指排斥

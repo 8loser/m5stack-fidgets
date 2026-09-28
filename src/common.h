@@ -45,10 +45,27 @@ static float wallCircle(float& x, float& y, float& vx, float& vy, float r, float
   if (vn <= 0) return 0;
   vx -= (1 + rest) * vn * nx; vy -= (1 + rest) * vn * ny; return vn;
 }
+// 螢幕四邊當牆;回傳撞牆的法向速度(沒撞到回 0)
+static float wallScreen(float& x, float& y, float& vx, float& vy, float r, float rest = 1) {
+  float hit = 0;
+  if (x < r) { x = r; if (vx < 0) { hit = fmaxf(hit, -vx); vx *= -rest; } }
+  if (x > W - r) { x = W - r; if (vx > 0) { hit = fmaxf(hit, vx); vx *= -rest; } }
+  if (y < r) { y = r; if (vy < 0) { hit = fmaxf(hit, -vy); vy *= -rest; } }
+  if (y > H - r) { y = H - r; if (vy > 0) { hit = fmaxf(hit, vy); vy *= -rest; } }
+  return hit;
+}
 // 點螢幕:把物體朝手指方向以速度 K 踢出去
 static void tapKick(const Ctx& c, float x, float y, float& vx, float& vy, float K) {
   float dx = c.tx - x, dy = c.ty - y, d = sqrtf(dx * dx + dy * dy) + 1e-3f; vx = dx / d * K; vy = dy / d * K;
 }
+// 點螢幕:把手指附近的物體往外彈飛,力道隨距離線性遞減;範圍含自身半徑讓大的也點得到
+static void tapPush(const Ctx& c, float x, float y, float& vx, float& vy, float r, float K) {
+  float dx = x - c.tx, dy = y - c.ty, d = sqrtf(dx * dx + dy * dy) + 1, R = 60 + r;
+  if (d < R) { float f = K * (1 - d / R); vx += dx / d * f; vy += dy / d * f; }
+}
+// 搖一下(c.shake > SHAKE 時對每個物體呼叫):往隨機方向噴開,甩越大力噴越快
+constexpr float SHAKE = 0.8f;
+static void shakeKick(const Ctx& c, float& vx, float& vy) { float a = frand() * 6.283f, v = 300 + c.shake * 300; vx += cosf(a) * v; vy += sinf(a) * v; }
 // 速度長度固定成 s(重力只改方向,不改快慢)
 static void setSpeed(float& vx, float& vy, float s) { float v = sqrtf(vx * vx + vy * vy); if (v > 1e-3f) { vx *= s / v; vy *= s / v; } }
 static void buzz(uint8_t level, uint32_t ms) { if (muted) return; M5.Power.setVibration(level); vibUntil = millis() + ms; }

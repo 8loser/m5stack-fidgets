@@ -3,7 +3,7 @@
 
 // ================= 切割 =================
 // 圓框裡的多邊形帶著重力彈跳翻滾,正中央有一顆不動的小球;多邊形掃過小球就沿掃過的路徑被切成兩片,
-// 切下來的小半換新顏色、大半保留原色,所有片都會慢慢長大。片數到上限後整圈炸開,重來
+// 切下來的小半換新顏色、大半保留原色,所有片都會慢慢長大。片數到上限後整圈炸開,重來。搖一下全部噴開、亂轉
 namespace slicer {
   using ringlib::spark; using ringlib::stepSparks; using ringlib::drawSparks; using ringlib::segCol;
   constexpr int CXS = 160, CYS = 120, RAD = 108, MAXP = 64, MAXV = 10; constexpr float G = 300, MIN_AREA = 25, REST = 0.75f, GROW = 0.08f, MAX_R = 55;   // 每秒長大 8%,最遠頂點到 55 px 停
@@ -54,6 +54,7 @@ namespace slicer {
   }
   void step(const Ctx& c) {
     int live = 0;
+    if (!over && c.shake > SHAKE) { for (auto& q : p) if (q.live) { shakeKick(c, q.vx, q.vy); q.vang += (frand() - 0.5f) * 8; } buzz(80, 30); }
     for (auto& q : p) if (q.live) {
       live++;
       if (c.tap) { float dx = q.cx - c.tx, dy = q.cy - c.ty, d2 = dx * dx + dy * dy + 100; if (d2 < 80 * 80) { float f = 3e5f / d2; q.vx += dx / sqrtf(d2) * f; q.vy += dy / sqrtf(d2) * f; } }

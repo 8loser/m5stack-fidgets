@@ -40,6 +40,7 @@
 #include "brawl.h"
 #include "redlight.h"
 #include "spintop.h"
+#include "jam.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
@@ -82,6 +83,7 @@ static const Game games[] = {
   { 0.42f, brawl::init,   brawl::step,   brawl::draw   },
   { 0.93f, redlight::init, redlight::step, redlight::draw, true },
   { 0.62f, spintop::init, spintop::step, spintop::draw, true },
+  { 0.03f, jam::init,     jam::step,     jam::draw,     true },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0, started = -1;   // cur<0 = 在選單;started = 已經 init 過的遊戲(進遊戲第一幀保險重置用)

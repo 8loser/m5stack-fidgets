@@ -12,7 +12,7 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 | 4 | 井字 | 旋轉的 3x3 箱,牆和 O/X 都會反彈;每 2 秒在離球最近的空格蓋記號 |
 | 5 | 切割 | 多邊形掃過中央小球就被切開,片片慢慢長大,塞滿後炸開 |
 | 6 | 向心加速 | 同心環各有旋轉的缺口,球穿過缺口就往內一層並加速,碰到中心炸開 |
-| 7 | 三角形溢出 | 三角形場地右邊有缺口,每逃出一個小三角形就生 3 個,直到塞滿 |
+| 7 | 圓球溢出 | 圓形場地有一道缺口,A/C 轉動缺口、搖一下全部噴開;每逃出一顆小球就生 3 個,直到塞滿 |
 | 8 | 合成圓 | 圓形場地掉下多邊形,相同的碰到就合成邊數多一級的,直到生出圓 |
 | 9 | 氣球與尖刺 | 氣球每彈一次就充大,碰到邊上的尖刺才會破,破一個生兩個 |
 | 10 | 細胞分裂 | 紅藍細胞不斷分裂互相推擠,塞滿時多的那隊贏 |
@@ -58,7 +58,7 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 螢幕下方三個觸控鍵:
 
 - 選單:A / C 或左右滑換遊戲,B 或點預覽進入(進入時遊戲重置);10 秒沒操作自動輪播;卡片下方顯示該遊戲進入過幾次(存 NVS)
-- 遊戲內:A / C 是遊戲操作:有東西在轉的遊戲(色層擴張、井字、向心 / 逃脫加速、碎石、五角形、同色合併、每彈一次生一顆、轉環引路、蹺蹺板、雙輪、尖刺碗)用來轉它;小恐龍 A 跳 C 蹲;一二三木頭人 A 左腳 C 右腳;其他是往左 / 往右的虛擬傾斜。B 長按回選單、雙擊重置(短按不做事;B 只認鍵區正中 70 px,靠邊的算按 A / C 擦到)
+- 遊戲內:A / C 是遊戲操作:有東西在轉的遊戲(色層擴張、井字、向心 / 逃脫加速、圓球溢出、碎石、五角形、同色合併、每彈一次生一顆、轉環引路、蹺蹺板、雙輪、尖刺碗)用來轉它;小恐龍 A 跳 C 蹲;一二三木頭人 A 左腳 C 右腳;其他是往左 / 往右的虛擬傾斜。B 長按回選單、雙擊重置(短按不做事;B 只認鍵區正中 70 px,靠邊的算按 A / C 擦到)
 
 ## 建置
 
@@ -79,7 +79,7 @@ PlatformIO + Arduino framework,依賴 M5Unified(`platformio.ini`)。
 - `src/main.cpp`:選單與主迴圈;新遊戲寫一個 `.h` 提供 `init / step / draw`,在 `games[]` 加一行
 - `src/common.h`:畫布、Ctx、顏色、震動、音效合成、圓形場地反彈 / 點擊踢球 / 定速等共用函式
 - `src/ringlib.h`:環系列共用(弧線、球與扇區碰撞、火花、脫落環片)
-- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 12)`tri.h` `merge.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h` `nbguess.h` `nbbuild.h` `nbcompare.h` `mathrun.h` `dungeon.h` `brawl.h` `redlight.h`:各遊戲
+- `src/balls.h` `plinko.h` `expand.h` `ttt.h` `slicer.h` `gaprings.h`(6 與 12)`overflow.h` `merge.h` `balloon.h` `split.h` `paint.h` `beat.h` `rubble.h` `penta.h` `war.h` `shatter.h` `pet.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h` `nbguess.h` `nbbuild.h` `nbcompare.h` `mathrun.h` `dungeon.h` `brawl.h` `redlight.h`:各遊戲
 - `src/numberlib.h`:Numberblocks 系列共用(畫數字塔、選項按鈕、出題)
 - `src/marblelib.h`:彈珠系列共用(彈珠池、線段 / 圓 / 弧碰撞、子步物理、右側色管)
 - `src/face.h`:火柴人的臉與表情(電子雞、盪繩共用);`src/ragdoll.h`:Verlet 布娃娃骨架(盪繩用)

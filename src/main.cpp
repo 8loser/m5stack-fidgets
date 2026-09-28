@@ -5,7 +5,6 @@
 #include <Preferences.h>
 #include "balls.h"
 #include "pinball.h"
-#include "expand.h"
 #include "ttt.h"
 #include "slicer.h"
 #include "gaprings.h"
@@ -48,7 +47,6 @@ struct Game { float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(
 static const Game games[] = {
   { 0.55f, balls::init,  balls::step,  balls::draw  },
   { 0.33f, pinball::init, pinball::step, pinball::draw, true },
-  { 0.15f, expand::init,  expand::step,  expand::draw,  true },
   { 0.50f, ttt::init,     ttt::step,     ttt::draw,     true },
   { 0.70f, slicer::init,  slicer::step,  slicer::draw  },
   { 0.05f, gaprings::initIn,  gaprings::step, gaprings::draw, true },

@@ -11,7 +11,6 @@
 #include "gaprings.h"
 #include "tri.h"
 #include "merge.h"
-#include "grow.h"
 #include "balloon.h"
 #include "split.h"
 #include "paint.h"
@@ -53,7 +52,6 @@ static const Game games[] = {
   { 0.05f, gaprings::initIn,  gaprings::step, gaprings::draw, true },
   { 0.90f, tri::init,     tri::step,     tri::draw     },
   { 0.40f, merge::init,   merge::step,   merge::draw   },
-  { 0.78f, grow::init,    grow::step,    grow::draw    },
   { 0.12f, balloon::init, balloon::step, balloon::draw },
   { 0.98f, split::init,   split::step,   split::draw   },
   { 0.60f, paint::init,   paint::step,   paint::draw   },

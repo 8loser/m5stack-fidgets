@@ -30,7 +30,8 @@ namespace marblelib {
   }
   static void hitArc(M& o, float cx, float cy, float r, float a0, float a1) {   // 弧:只有 a0..a1(度)這段是實體,兩面都擋
     float dx = o.x - cx, dy = o.y - cy, d = sqrtf(dx * dx + dy * dy) + 1e-3f; if (fabsf(d - r) >= R + 2) return;
-    float a = fmodf(atan2f(dy, dx) * RAD_TO_DEG - a0 + 720, 360), span = fmodf(a1 - a0 + 720, 360); if (a > span) return;
+    float a = fmodf(atan2f(dy, dx) * RAD_TO_DEG - a0, 360), span = fmodf(a1 - a0, 360);   // 轉環的角度會一直累加,不能靠 +720 保證非負
+    if (a < 0) a += 360; if (span < 0) span += 360; if (a > span) return;
     float nx = dx / d, ny = dy / d, side = d < r ? -1 : 1, vn = o.vx * nx + o.vy * ny;
     o.x = cx + nx * (r + side * (R + 2)); o.y = cy + ny * (r + side * (R + 2));
     if (vn * side < 0) { o.vx -= (1 + REST) * vn * nx; o.vy -= (1 + REST) * vn * ny; }

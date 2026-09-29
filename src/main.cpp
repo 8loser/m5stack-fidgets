@@ -12,7 +12,7 @@
 #include "merge.h"
 #include "balloon.h"
 #include "split.h"
-#include "paint.h"
+#include "stringart.h"
 #include "beat.h"
 #include "penta.h"
 #include "war.h"
@@ -21,7 +21,6 @@
 #include "dino.h"
 #include "seed.h"
 #include "colormerge.h"
-#include "inkring.h"
 #include "spawnring.h"
 #include "arcring.h"
 #include "seesaw.h"
@@ -54,7 +53,7 @@ static const Game games[] = {
   { "merge", 0.40f, merge::init,   merge::step,   merge::draw   },
   { "balloon", 0.12f, balloon::init, balloon::step, balloon::draw, true },
   { "split", 0.98f, split::init,   split::step,   split::draw   },
-  { "paint", 0.60f, paint::init,   paint::step,   paint::draw   },
+  { "stringart", 0.60f, stringart::init, stringart::step, stringart::draw, true },
   { "gaprings", 0.85f, gaprings::init, gaprings::step, gaprings::draw, true },
   { "beat", 0.30f, beat::init,    beat::step,    beat::draw    },
   { "penta", 0.45f, penta::init,   penta::step,   penta::draw,   true },
@@ -64,7 +63,6 @@ static const Game games[] = {
   { "dino", 0.66f, dino::init,    dino::step,    dino::draw    },
   { "seed", 0.75f, seed::init,    seed::step,    seed::draw    },
   { "colormerge", 0.28f, colormerge::init, colormerge::step, colormerge::draw },
-  { "inkring", 0.00f, inkring::init, inkring::step, inkring::draw },
   { "spawnring", 0.52f, spawnring::init, spawnring::step, spawnring::draw, true },
   { "arcring", 0.95f, arcring::init, arcring::step, arcring::draw, true },
   { "seesaw", 0.35f, seesaw::init,  seesaw::step,  seesaw::draw,  true },

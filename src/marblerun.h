@@ -2,21 +2,22 @@
 #include "marblelib.h"
 
 // ================= 彈珠機關 =================
-// 把原本的轉環引路、蹺蹺板、雙輪、尖刺碗由上往下串成一條:彈珠倒進頂端兩層轉環,從缺口掉到兩塊蹺蹺板,
-// 經過左右槳輪與中間的小槳輪(都自由轉動,被彈珠撞到或壓著就跟著轉)、彈跳柱(兩側各兩根、中間三根,碰到就被彈開)、斜板,落進底部的尖刺碗(碰到刺就破),轉碗才倒得出去。
+// 把原本的轉環引路、蹺蹺板、雙輪、尖刺碗由上往下串成一條:彈珠倒進頂端兩層轉環,從缺口掉到上面兩塊蹺蹺板,
+// 經過左右槳輪與中間的小槳輪(都自由轉動,被彈珠撞到或壓著就跟著轉)、彈跳柱(兩側各兩根、中間三根、下面兩塊蹺蹺板外側各一根,碰到就被彈開)、斜板,落進底部的尖刺碗(碰到刺就破),轉碗才倒得出去;碗兩側偏下還有兩塊蹺蹺板。
 // A / C 讓全部機關一起往逆 / 順時針轉(轉環、蹺蹺板、槳輪、碗);點蹺蹺板一端壓下去、按住槳輪用馬達轉它(往中間帶)。
 // 碗放開慢慢回正。彈珠依顏色堆進右邊的管子(見 marblelib.h)
 namespace marblerun {
   using namespace marblelib;
-  constexpr int CX = AW / 2, NR = 2, NS = 2, NW = 3, NP = 4, NSPIKE = 3;
+  constexpr int CX = AW / 2, NR = 2, NS = 4, NW = 3, NP = 4, NSPIKE = 3;
   constexpr float RCY = 8, RAD[NR] = { 30, 46 }, GAP[NR] = { 40, 34 }, DRIFT[NR] = { 14, -10 };          // 轉環
   constexpr float SLEN = 60, LIM = 0.6f, TORQUE = 0.6f, DAMP = 1.5f;                                         // 蹺蹺板
   constexpr float OMEGA = 2.2f, WK = 1.5e-4f, WDAMP = 1.2f, WMAX = 6;                                     // 槳輪;WK:彈珠動量換成大槳輪角速度的比例,小的照半徑平方放大(比較輕)
   constexpr float BCY = 182, BOWL_R = 46, A0 = 20, A1 = 160, SPIKE_A[NSPIKE] = { 70, 90, 110 }, SPIKE_L = 13;   // 尖刺碗
-  constexpr int NB = 7; constexpr float BUMP_R = 4, BKICK = 240;                                                 // 彈跳柱:撞到往外補一記速度
+  constexpr int NB = 9; constexpr float BUMP_R = 4, BKICK = 240;                                                 // 彈跳柱:撞到往外補一記速度
   constexpr float FUN_LEN = 87, FUN_A = 0.278f;                                                              // 斜板:把兩邊掉下來的彈珠送進碗
-  static const float SX[NS] = { 84, 172 }, SY[NS] = { 70, 70 }, WX[NW] = { 64, 192, 125 }, WY[NW] = { 140, 140, 128 }, WR[NW] = { 24, 24, 12 }, WIN[NW] = { 1, -1, 1 }, FX[2] = { 50, 206 }, FY = 172,   // 槳輪:左、右、兩輪中間的小的;WIN 是按住時的方向(往中間帶)
-                     BX[NB] = { 125, 104, 146, 28, 28, 228, 228 }, BY[NB] = { 176, 154, 154, 100, 126, 100, 126 };   // 碗口一根、它上方左右兩根、兩側各兩根
+  static const float SX[NS] = { 84, 172, 40, 216 }, SY[NS] = { 70, 70, 215, 215 },   // 蹺蹺板:上面兩塊、碗兩側偏下兩塊
+                     WX[NW] = { 64, 192, 125 }, WY[NW] = { 140, 140, 128 }, WR[NW] = { 24, 24, 12 }, WIN[NW] = { 1, -1, 1 }, FX[2] = { 50, 206 }, FY = 172,   // 槳輪:左、右、兩輪中間的小的;WIN 是按住時的方向(往中間帶)
+                     BX[NB] = { 125, 104, 146, 28, 28, 228, 228, 6, 250 }, BY[NB] = { 176, 154, 154, 100, 126, 100, 126, 188, 188 };   // 碗口一根、它上方左右兩根、兩側各兩根、下面兩塊蹺蹺板外側靠邊各一根
   static float ang[NR], th[NS], om[NS], tq[NS], wth[NW], wom[NW], wimp[NW], ba, flash[NB]; static bool drive[NW];
   // 轉環每層兩個缺口相差 90°(在 ang 與 ang + 90),轉到兩個都朝下時一次從兩邊放球;h = 0 是兩缺口之間的短弧、1 是長弧
   static float arcA(int i, int h) { return ang[i] + h * 90 + GAP[i] / 2; }

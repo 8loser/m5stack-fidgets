@@ -14,7 +14,6 @@
 #include "split.h"
 #include "paint.h"
 #include "beat.h"
-#include "rubble.h"
 #include "penta.h"
 #include "war.h"
 #include "shatter.h"
@@ -56,7 +55,6 @@ static const Game games[] = {
   { "paint", 0.60f, paint::init,   paint::step,   paint::draw   },
   { "gaprings", 0.85f, gaprings::init, gaprings::step, gaprings::draw, true },
   { "beat", 0.30f, beat::init,    beat::step,    beat::draw    },
-  { "rubble", 0.08f, rubble::init,  rubble::step,  rubble::draw,  true },
   { "penta", 0.45f, penta::init,   penta::step,   penta::draw,   true },
   { "war", 0.62f, war::init,     war::step,     war::draw     },
   { "shatter", 0.20f, shatter::init, shatter::step, shatter::draw, true },

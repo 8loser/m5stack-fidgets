@@ -63,7 +63,7 @@ static const Game games[] = {
   { "swing", 0.10f, swing::init,   swing::step,   swing::draw   },
   { "dino", 0.66f, dino::init,    dino::step,    dino::draw    },
   { "seed", 0.75f, seed::init,    seed::step,    seed::draw    },
-  { "colormerge", 0.28f, colormerge::init, colormerge::step, colormerge::draw, true },
+  { "colormerge", 0.28f, colormerge::init, colormerge::step, colormerge::draw },
   { "inkring", 0.00f, inkring::init, inkring::step, inkring::draw },
   { "spawnring", 0.52f, spawnring::init, spawnring::step, spawnring::draw, true },
   { "arcring", 0.95f, arcring::init, arcring::step, arcring::draw, true },

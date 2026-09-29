@@ -1,7 +1,7 @@
 #pragma once
 #include "ringlib.h"
 
-// ================= 彈珠系列共用:彈珠池、碰撞、右側色管 =================
+// ================= 彈珠機關用:彈珠池、碰撞、右側色管 =================
 // 6 色彈珠輪流從上面倒進場地(左邊 256 px),穿過各遊戲自己的障礙掉出底部,就依顏色堆進右邊的管子累積;
 // 哪根管子先堆滿就全部清空重來。沒有輸贏。重力永遠向下,傾斜只給左右分量;點螢幕推開彈珠。
 // 物理每幀切 4 個子步,彈珠才不會穿過薄障礙
@@ -13,7 +13,7 @@ namespace marblelib {
   static uint32_t col(int c) { return hsv(c / (float)NCOL); }
   static void reset() { memset(m, 0, sizeof m); memset(tube, 0, sizeof tube); spawnT = 0; spawned = lost = 0; ringlib::reset(); cv.fillScreen(0); }
   static void spawnNext(float x) { for (auto& o : m) if (!o.live) { o = { x + (frand() - 0.5f) * 30, -8, (frand() - 0.5f) * 40, 0, (int8_t)(spawned % NCOL), true }; spawned++; return; } }   // 六色輪流
-  static float barT;   // 上一次 hitBar 撞到的位置(沿桿子的距離,中心為 0);蹺蹺板拿它算力矩
+  static float barT;   // 上一次 hitBar 撞到的位置(沿桿子的距離,中心為 0);彈珠機關的蹺蹺板拿它算力矩
   static bool hitBar(M& o, float bx, float by, float len, float a, float spin = 0) {   // 線段:中心、長、角;spin 是角速度,撞到吃到桿面速度
     float ux = cosf(a), uy = sinf(a), dx = o.x - bx, dy = o.y - by, t = dx * ux + dy * uy; t = t < -len / 2 ? -len / 2 : t > len / 2 ? len / 2 : t;
     float px = bx + ux * t, py = by + uy * t, ex = o.x - px, ey = o.y - py, d = sqrtf(ex * ex + ey * ey) + 1e-3f, rr = R + 2;
@@ -61,7 +61,7 @@ namespace marblelib {
     stepSparks(c.dt);
   }
   static void drawMarbles() { for (auto& o : m) if (o.live) cv.fillCircle((int)o.x, (int)o.y, R, col(o.col)); drawSparks(); }
-  static void hud(const char* what) {   // 右側色管;what 非空就在左上顯示它的計數(尖刺碗的 popped)
+  static void hud(const char* what) {   // 右側色管;what 非空就在左上顯示它的計數(彈珠機關的 popped)
     cv.drawFastVLine(AW + 1, 0, H, rgb(60, 60, 70));
     for (int c = 0; c < NCOL; c++) {
       int x = AW + 4 + c * 10;

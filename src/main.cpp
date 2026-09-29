@@ -22,10 +22,7 @@
 #include "seed.h"
 #include "colormerge.h"
 #include "spawnring.h"
-#include "arcring.h"
-#include "seesaw.h"
-#include "wheels.h"
-#include "spikebowl.h"
+#include "marblerun.h"
 #include "penalty.h"
 #include "dig.h"
 #include "stack.h"
@@ -64,10 +61,7 @@ static const Game games[] = {
   { "seed", 0.75f, seed::init,    seed::step,    seed::draw    },
   { "colormerge", 0.28f, colormerge::init, colormerge::step, colormerge::draw },
   { "spawnring", 0.52f, spawnring::init, spawnring::step, spawnring::draw, true },
-  { "arcring", 0.95f, arcring::init, arcring::step, arcring::draw, true },
-  { "seesaw", 0.35f, seesaw::init,  seesaw::step,  seesaw::draw,  true },
-  { "wheels", 0.18f, wheels::init,  wheels::step,  wheels::draw,  true },
-  { "spikebowl", 0.08f, spikebowl::init, spikebowl::step, spikebowl::draw, true },
+  { "marblerun", 0.25f, marblerun::init, marblerun::step, marblerun::draw, true },
   { "penalty", 0.33f, penalty::init, penalty::step, penalty::draw },
   { "dig", 0.10f, dig::init,     dig::step,     dig::draw     },
   { "stack", 0.60f, stack::init,   stack::step,   stack::draw   },

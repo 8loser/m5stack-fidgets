@@ -92,7 +92,7 @@ namespace pinball {
     stepSparks(c.dt); for (auto& f : flash) if (f > 0) f -= c.dt;
     if (over) { if ((endT += c.dt) > 1.5f && c.tap) init(); return; }
     bool hold[2] = { c.btnA, c.btnC };
-    for (int i = 0; i < (int)M5.Touch.getCount(); i++) { auto& d = M5.Touch.getDetail(i); if (d.isPressed() && d.y < H) hold[d.x >= W / 2] = true; }   // Ctx 只帶第一指,兩指同按要自己讀(同雙輪)
+    for (int i = 0; i < (int)M5.Touch.getCount(); i++) { auto& d = M5.Touch.getDetail(i); if (d.isPressed() && d.y < H) hold[d.x >= W / 2] = true; }   // Ctx 只帶第一指,兩指同按要自己讀(同彈珠機關的槳輪)
     if (muted) {   // 選單預覽:球靠近擋板且往下掉就揮
       hold[0] = x < 155 && y > 185 && vy > 0; hold[1] = x >= 155 && y > 185 && vy > 0;
     }

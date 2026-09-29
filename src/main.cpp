@@ -41,6 +41,7 @@
 #include "jam.h"
 #include "racer.h"
 #include "gears.h"
+#include "garage.h"
 
 // ================= 選單(卡片輪播 + 活的預覽)與主迴圈 =================
 struct Game { const char* key; float hue; void (*init)(); void (*step)(const Ctx&); void (*draw)(); bool acOwn; };   // key:進入次數存 NVS 用的名字(<= 15 字);acOwn:遊戲自己用 A/C(轉東西),主迴圈就不把它們當虛擬傾斜
@@ -83,6 +84,7 @@ static const Game games[] = {
   { "jam", 0.03f, jam::init,     jam::step,     jam::draw,     true },
   { "racer", 0.48f, racer::init,   racer::step,   racer::draw   },
   { "gears", 0.15f, gears::init,   gears::step,   gears::draw,   true },
+  { "garage", 0.05f, garage::init,  garage::step,  garage::draw,  true },
 };
 constexpr int NG = sizeof games / sizeof games[0];
 static int cur = -1, sel = 0, started = -1;   // cur<0 = 在選單;started = 已經 init 過的遊戲(進遊戲第一幀保險重置用)

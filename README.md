@@ -44,10 +44,11 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 | 36 | 塞車 | Rush Hour:拖車讓紅車從右邊出口出去,關卡即時產生、每關最少步數 +2(4 到 15);A 重來這關、C 提示一步扣 10 秒;180 秒解幾關,前 5 名排行 |
 | 37 | 公路賽車 | OutRun 式偽 3D 公路,有彎道與上下坡;自動加速(150 漸增到 300 km/h),傾斜 / A / C 轉向、按住螢幕煞車,彎道會被甩向外側、開出路面減速;車流越來越多,撞到就結束,比距離,前 5 名排行 |
 | 38 | 齒輪 | 左邊藍色驅動輪、另一頭金色目標輪,點中間的「+」空位換 小 / 中 / 大 / 空,接通後目標輪跟著轉、每過一齒彈一個音;手指畫圈轉藍輪、A / C 馬達、搖一下給衝力;目標輪轉滿兩圈過關換新場景。齒輪疊在一起或三顆繞成一圈會卡死變紅,第 3 關起有要留空的陷阱空位;沒有輸贏 |
+| 39 | 修車廠 | 每台車開進來帶幾個故障,點零件進去修:輪胎(上下拉打氣筒進綠區、打過頭爆胎;扎釘子或爆胎就按住螺帽用氣動扳手拆光、撥掉換新再鎖回)、油箱(往右傾或按住油桶倒到綠線)、電瓶(點引擎蓋,紅夾子接 +、黑夾子接 -,夾錯噴火花)、大燈(繞圈轉下破燈泡、拖新的進去再轉緊;只有大燈不亮是燈泡、前後燈都不亮是電瓶)、凹痕(直接點車門敲平,亂敲好車門會敲凹)、泥巴(手指擦掉);A 回全景、C 試車,每種沒修好的都有自己的樣子:發不動、扁胎啪啪顛、輪子掉下來擦出火花、漏氣、打太飽一路彈跳、沒油冒黑煙熄火、車門掉下來、天黑撞飛三角錐、蒼蠅繞著飛;180 秒比修好幾台,前 5 名排行 |
 
 彈珠系列(轉環引路、蹺蹺板、雙輪、尖刺碗,取自第四支影片):6 色彈珠輪流倒進場地,掉出底部就依顏色堆進右邊的管子累積,哪根先滿就全部清空重來,沒有輸贏。全部都是傾斜給左右重力、點螢幕推開彈珠。
 
-有輸贏的遊戲(彈珠檯、小恐龍、壓板與 Seed、罰球、挖地、方塊堆、Numberblocks 三個、算數跑酷、地城勇者、彈珠勇者大戰、一二三木頭人、戰鬥陀螺、塞車、公路賽車)結束時顯示前 5 名排行,存 NVS。
+有輸贏的遊戲(彈珠檯、小恐龍、壓板與 Seed、罰球、挖地、方塊堆、Numberblocks 三個、算數跑酷、地城勇者、彈珠勇者大戰、一二三木頭人、戰鬥陀螺、塞車、公路賽車、修車廠)結束時顯示前 5 名排行,存 NVS。
 
 罰球、挖地、方塊堆取自第五支影片的 2:37、3:17、4:09 三段。彈珠勇者大戰取自「24 MARBLES MUST DEFEND THE MINECRAFT FARM」,去掉任務書與農場保護只留兩批彈珠對打。Numberblocks 三個(看塔猜數、湊出這個數、比大小與加法)取自 Numberblocks「Standing Tall 1 to 100」,練數量感與十進位。
 
@@ -58,7 +59,7 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 螢幕下方三個觸控鍵:
 
 - 選單:A / C 或左右滑換遊戲,B 或點預覽進入(進入時遊戲重置);10 秒沒操作自動輪播;卡片下方顯示該遊戲進入過幾次(存 NVS,以遊戲名為 key)
-- 遊戲內:A / C 是遊戲操作:有東西在轉的遊戲(井字、逃脫加速、圓球溢出、氣球與尖刺、五角形、打碎環、同色合併、每彈一次生一顆、轉環引路、蹺蹺板、雙輪、尖刺碗、齒輪)用來轉它;彈珠檯 A / C 揮左 / 右擋板;小恐龍 A 跳 C 蹲;一二三木頭人 A 左腳 C 右腳;戰鬥陀螺 A / C 放旋風衝刺;塞車 A 重來 C 提示;其他是往左 / 往右的虛擬傾斜。B 長按回選單、雙擊重置(短按不做事;B 只認鍵區正中 70 px,靠邊的算按 A / C 擦到)
+- 遊戲內:A / C 是遊戲操作:有東西在轉的遊戲(井字、逃脫加速、圓球溢出、氣球與尖刺、五角形、打碎環、同色合併、每彈一次生一顆、轉環引路、蹺蹺板、雙輪、尖刺碗、齒輪)用來轉它;修車廠 A 回全景 C 試車;彈珠檯 A / C 揮左 / 右擋板;小恐龍 A 跳 C 蹲;一二三木頭人 A 左腳 C 右腳;戰鬥陀螺 A / C 放旋風衝刺;塞車 A 重來 C 提示;其他是往左 / 往右的虛擬傾斜。B 長按回選單、雙擊重置(短按不做事;B 只認鍵區正中 70 px,靠邊的算按 A / C 擦到)
 
 ## 建置
 
@@ -81,7 +82,7 @@ PlatformIO + Arduino framework,依賴 M5Unified(`platformio.ini`)。
 - `src/gearsim.h`:齒輪的關卡產生與連動計算,不依賴 M5;`g++ -O2 -Isrc test/gears_check.cpp -o /tmp/gc && /tmp/gc` 在主機上核對
 - `src/common.h`:畫布、Ctx、顏色、震動、音效合成、圓形場地反彈 / 點擊踢球 / 定速等共用函式
 - `src/ringlib.h`:環系列共用(弧線、球與扇區碰撞、火花、脫落環片)
-- `src/balls.h` `pinball.h` `ttt.h` `slicer.h` `gaprings.h`(逃脫加速)`overflow.h` `merge.h` `balloon.h` `split.h` `paint.h` `beat.h` `penta.h` `war.h` `shatter.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h` `nbguess.h` `nbbuild.h` `nbcompare.h` `mathrun.h` `dungeon.h` `brawl.h` `redlight.h` `spintop.h` `gears.h`:各遊戲
+- `src/balls.h` `pinball.h` `ttt.h` `slicer.h` `gaprings.h`(逃脫加速)`overflow.h` `merge.h` `balloon.h` `split.h` `paint.h` `beat.h` `penta.h` `war.h` `shatter.h` `swing.h` `dino.h` `seed.h` `colormerge.h` `inkring.h` `spawnring.h` `arcring.h` `seesaw.h` `wheels.h` `spikebowl.h` `penalty.h` `dig.h` `stack.h` `nbguess.h` `nbbuild.h` `nbcompare.h` `mathrun.h` `dungeon.h` `brawl.h` `redlight.h` `spintop.h` `gears.h` `garage.h`:各遊戲
 - `src/numberlib.h`:Numberblocks 系列共用(畫數字塔、選項按鈕、出題)
 - `src/marblelib.h`:彈珠系列共用(彈珠池、線段 / 圓 / 弧碰撞、子步物理、右側色管)
 - `src/face.h`:火柴人的臉與表情(盪繩等共用);`src/ragdoll.h`:Verlet 布娃娃骨架(盪繩用)

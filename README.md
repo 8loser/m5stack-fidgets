@@ -56,6 +56,8 @@ Three touch buttons below the screen:
 
 ## Build
 
+To just play, flash it from the browser at <https://8loser.github.io/m5stack-fidgets/> (desktop Chrome / Edge, nothing to install). To build it yourself:
+
 Requires the [PlatformIO](https://platformio.org/) CLI. With the Core2 connected over USB, run this in the project root:
 
 ```

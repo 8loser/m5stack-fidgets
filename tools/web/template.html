@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>m5stack-fidgets</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+<style>
+  :root { color-scheme: light dark; --bg: #fff; --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --box: #f6f8fa; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --line: #3d444d; --box: #151b23; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  a { color: #4493f8; }
+  img { max-width: 100%; }
+  table { border-collapse: collapse; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--line); padding: 6px 10px; vertical-align: middle; }
+  code, pre { background: var(--box); border-radius: 6px; }
+  .install { background: var(--box); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 16px 0; }
+  .install p { margin: 8px 0 0; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+{{BODY}}
+</main>
+</body>
+</html>

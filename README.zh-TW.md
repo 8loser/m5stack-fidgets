@@ -56,6 +56,8 @@ M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢�
 
 ## 建置
 
+只想玩的話,用 <https://8loser.github.io/m5stack-fidgets/> 從瀏覽器直接燒錄(桌面版 Chrome / Edge,不用裝任何東西)。自己建置:
+
 需要 [PlatformIO](https://platformio.org/) CLI。Core2 用 USB 線接上電腦後,在專案根目錄執行:
 
 ```

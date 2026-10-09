@@ -72,7 +72,6 @@ static void buzz(uint8_t level, uint32_t ms) { if (muted) return; M5.Power.setVi
 
 // 音效。note():鋼琴感的音(6 個諧波、快起音、約 1 秒衰減,高次諧波衰得快),音高吸到 C 大調五聲音階
 //       click():撞擊的低沉「咚」聲(500 Hz 主體 + 150 Hz 底 + 750 Hz 泛音,約 35 ms 衰 20 dB)。
-//               量自參考影片井字段(43 到 48 秒)的牆壁撞擊:99% 能量在 300 到 900 Hz,2 kHz 以上幾乎沒有
 namespace snd {
   constexpr int SR = 12000, LEN = SR, CSR = 12000, CLEN = CSR * 8 / 100, NBUF = 6;   // click 80 ms
   static int16_t* buf[NBUF]; static int16_t cbuf[CLEN]; static int16_t lut[256];   // cbuf 才 2 KB,放內部 RAM 不依賴 PSRAM

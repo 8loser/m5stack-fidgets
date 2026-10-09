@@ -4,6 +4,8 @@
 
 M5Stack Core2 上的物理模擬小玩具合集:傾斜裝置給重力、點螢幕互動,撞擊有聲音與震動。
 
+![m5stack-fidgets](previews/banner.gif)
+
 ## 遊戲
 
 | # | 名稱 | 畫面 | 玩法 |

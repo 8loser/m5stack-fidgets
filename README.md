@@ -4,6 +4,8 @@ English | [繁體中文](README.zh-TW.md)
 
 A collection of small physics toys for the M5Stack Core2: tilt the device for gravity, touch the screen to interact, and collisions come with sound and vibration.
 
+![m5stack-fidgets](previews/banner.gif)
+
 ## Games
 
 | # | Name | Preview | How to play |

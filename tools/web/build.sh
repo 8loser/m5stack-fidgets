@@ -29,7 +29,7 @@ EOF
 render() {
   sed '/^## \(Build\|建置\)/,$d' "$1" | gh api markdown -f mode=gfm -f context=8loser/m5stack-fidgets -F text=@- \
     | sed 's/href="README\.zh-TW\.md"/href="zh-TW.html"/; s/href="README\.md"/href="index.html"/' \
-    | sed -E 's#<a target="_blank"[^>]*>(<img[^>]*>)</a>#\1#g' > "$out/body.tmp"  # GitHub 會把圖包成開新分頁的連結
+    | sed -E 's#<a target="_blank"[^>]*>(<img[^>]*>)</a>#\1#g; s# style="max-width: 100%;"##g' > "$out/body.tmp"  # GitHub 會把圖包成開新分頁的連結,並加上蓋過 CSS 的 inline 樣式
   INSTALL=$4 LANG_=$3 python3 - "$out/body.tmp" "$2" <<'PY'
 import os, sys
 body = open(sys.argv[1]).read()

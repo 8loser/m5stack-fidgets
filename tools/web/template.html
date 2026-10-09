@@ -9,9 +9,10 @@
   :root { color-scheme: light dark; --bg: #fff; --fg: #1f2328; --muted: #59636e; --line: #d1d9e0; --box: #f6f8fa; }
   @media (prefers-color-scheme: dark) { :root { --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --line: #3d444d; --box: #151b23; } }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
-  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
   a { color: #4493f8; }
   img { max-width: 100%; }
+  td img { width: 320px; max-width: none; }  /* README 寫 width=160 是給 GitHub 版面的,網頁用原尺寸 */
   table { border-collapse: collapse; display: block; overflow-x: auto; }
   th, td { border: 1px solid var(--line); padding: 6px 10px; vertical-align: middle; }
   code, pre { background: var(--box); border-radius: 6px; }
